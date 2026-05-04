@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+            http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="001-init" author="vasilina">
+        <createTable tableName="photos">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" primaryKeyName="pk_photos" nullable="false"/>
+            </column>
+            <column name="title" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="path" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="schedules">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" primaryKeyName="pk_schedules" nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="users">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" primaryKeyName="pk_users" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="nickname" type="varchar(255)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_users_nickname"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_users_email"/>
+            </column>
+            <column name="password_hash" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="photo_id" type="uuid"/>
+        </createTable>
+
+        <createTable tableName="events">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" primaryKeyName="pk_events" nullable="false"/>
+            </column>
+            <column name="event_status" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(255)"/>
+            <column name="date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="place" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cost" type="numeric(38, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sport" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event_type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="skill_level" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="author_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="photo_id" type="uuid"/>
+            <column name="schedule_id" type="uuid"/>
+            <column name="deadline" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="teams_number" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="teams">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" primaryKeyName="pk_teams" nullable="false"/>
+            </column>
+            <column name="event_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="captain_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="games">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" primaryKeyName="pk_games" nullable="false"/>
+            </column>
+            <column name="schedule_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="result" type="varchar(255)"/>
+            <column name="first_participant_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="second_participant_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="comments">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" primaryKeyName="pk_comments" nullable="false"/>
+            </column>
+            <column name="content" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="author_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parent_id" type="uuid"/>
+        </createTable>
+
+        <createTable tableName="user_favorite_sports">
+            <column name="user_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sport" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_teams">
+            <column name="user_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="team_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="users"
+                columnNames="photo_id"
+                constraintName="uk_users_photo_id"/>
+        <addUniqueConstraint
+                tableName="events"
+                columnNames="photo_id"
+                constraintName="uk_events_photo_id"/>
+        <addUniqueConstraint
+                tableName="events"
+                columnNames="schedule_id"
+                constraintName="uk_events_schedule_id"/>
+        <addUniqueConstraint
+                tableName="user_teams"
+                columnNames="user_id, team_id"
+                constraintName="uk_user_teams_user_id_team_id"/>
+
+        <addForeignKeyConstraint
+                baseTableName="users"
+                baseColumnNames="photo_id"
+                constraintName="fk_users_photo_id"
+                referencedTableName="photos"
+                referencedColumnNames="id"/>
+        <addForeignKeyConstraint
+                baseTableName="events"
+                baseColumnNames="author_id"
+                constraintName="fk_events_author_id"
+                referencedTableName="users"
+                referencedColumnNames="id"/>
+        <addForeignKeyConstraint
+                baseTableName="events"
+                baseColumnNames="photo_id"
+                constraintName="fk_events_photo_id"
+                referencedTableName="photos"
+                referencedColumnNames="id"/>
+        <addForeignKeyConstraint
+                baseTableName="events"
+                baseColumnNames="schedule_id"
+                constraintName="fk_events_schedule_id"
+                referencedTableName="schedules"
+                referencedColumnNames="id"/>
+        <addForeignKeyConstraint
+                baseTableName="teams"
+                baseColumnNames="event_id"
+                constraintName="fk_teams_event_id"
+                referencedTableName="events"
+                referencedColumnNames="id"/>
+        <addForeignKeyConstraint
+                baseTableName="teams"
+                baseColumnNames="captain_id"
+                constraintName="fk_teams_captain_id"
+                referencedTableName="users"
+                referencedColumnNames="id"/>
+        <addForeignKeyConstraint
+                baseTableName="games"
+                baseColumnNames="schedule_id"
+                constraintName="fk_games_schedule_id"
+                referencedTableName="schedules"
+                referencedColumnNames="id"/>
+        <addForeignKeyConstraint
+                baseTableName="games"
+                baseColumnNames="first_participant_id"
+                constraintName="fk_games_first_participant_id"
+                referencedTableName="teams"
+                referencedColumnNames="id"/>
+        <addForeignKeyConstraint
+                baseTableName="games"
+                baseColumnNames="second_participant_id"
+                constraintName="fk_games_second_participant_id"
+                referencedTableName="teams"
+                referencedColumnNames="id"/>
+        <addForeignKeyConstraint
+                baseTableName="comments"
+                baseColumnNames="event_id"
+                constraintName="fk_comments_event_id"
+                referencedTableName="events"
+                referencedColumnNames="id"/>
+        <addForeignKeyConstraint
+                baseTableName="comments"
+                baseColumnNames="author_id"
+                constraintName="fk_comments_author_id"
+                referencedTableName="users"
+                referencedColumnNames="id"/>
+        <addForeignKeyConstraint
+                baseTableName="comments"
+                baseColumnNames="parent_id"
+                constraintName="fk_comments_parent_id"
+                referencedTableName="comments"
+                referencedColumnNames="id"/>
+        <addForeignKeyConstraint
+                baseTableName="user_favorite_sports"
+                baseColumnNames="user_id"
+                constraintName="fk_user_favorite_sports_user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"/>
+        <addForeignKeyConstraint
+                baseTableName="user_teams"
+                baseColumnNames="user_id"
+                constraintName="fk_user_teams_user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"/>
+        <addForeignKeyConstraint
+                baseTableName="user_teams"
+                baseColumnNames="team_id"
+                constraintName="fk_user_teams_team_id"
+                referencedTableName="teams"
+                referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>
