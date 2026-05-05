@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.hits.just_4sport.UserRepository;
+import ru.hits.just_4sport.repository.UserRepository;
 import ru.hits.just_4sport.model.domain.UserEntity;
 
 import java.util.List;

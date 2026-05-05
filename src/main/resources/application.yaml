@@ -6,8 +6,8 @@ spring:
     name: just_4sport
   datasource:
     url: jdbc:postgresql://localhost:5432/JUST4SPORT
-    username: postgres
-    password: 363639
+    username: ***
+    password: ***
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -16,3 +16,9 @@ spring:
 
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
+
+security:
+  jwt:
+    secret: ***
+    access-token-expiration-minutes: *
+    refresh-token-expiration-days: *
