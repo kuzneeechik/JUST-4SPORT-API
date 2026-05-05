@@ -6,8 +6,8 @@ spring:
     name: just_4sport
   datasource:
     url: jdbc:postgresql://localhost:5432/JUST4SPORT
-    username: ***
-    password: ***
+    username: postgres
+    password: 363639
     driver-class-name: org.postgresql.Driver
 
   jpa:

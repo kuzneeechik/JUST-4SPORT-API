@@ -8,5 +8,5 @@
             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <include file="001-init.xml" relativeToChangelogFile="true"/>
-
+    <include file="002-add-refresh-tokens.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
