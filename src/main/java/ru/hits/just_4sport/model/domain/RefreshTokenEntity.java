@@ -3,6 +3,7 @@ package ru.hits.just_4sport.model.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -11,6 +12,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Table(name = "refresh_tokens")
+@Accessors(chain = true)
 public class RefreshTokenEntity {
 
     @Id

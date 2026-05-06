@@ -3,6 +3,7 @@ package ru.hits.just_4sport.model.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import ru.hits.just_4sport.model.enums.Sport;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Table(name = "users")
+@Accessors(chain = true)
 public class UserEntity {
 
     @Id

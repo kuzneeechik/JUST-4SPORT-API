@@ -1,5 +1,6 @@
 package ru.hits.just_4sport.infrastructure;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,6 +15,12 @@ public class CustomExceptionHandler {
     public ResponseEntity<ExceptionResponseModel> catchNotFoundException(NotFoundException exception) {
         return new ResponseEntity<>(new ExceptionResponseModel(HttpStatus.NOT_FOUND.value(), exception.getMessage()),
                 HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ExceptionResponseModel> catchBadRequestException(BadRequestException exception) {
+        return new ResponseEntity<>(new ExceptionResponseModel(HttpStatus.BAD_REQUEST.value(), exception.getMessage()),
+                HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
