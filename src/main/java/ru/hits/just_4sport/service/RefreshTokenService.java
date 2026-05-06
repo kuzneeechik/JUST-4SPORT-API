@@ -3,6 +3,7 @@ package ru.hits.just_4sport.service;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
+import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.domain.RefreshTokenEntity;
 import ru.hits.just_4sport.model.domain.UserEntity;
 import ru.hits.just_4sport.properties.JwtProperties;
@@ -34,6 +35,15 @@ public class RefreshTokenService {
         refreshTokenRepository.save(refreshToken);
 
         return rawToken;
+    }
+
+    public void revokeToken(String token) {
+        var tokenHash = refreshTokenRepository.findByTokenHash(hashToken(token))
+                .orElseThrow(() -> new NotFoundException("Токен не найден"));
+
+        tokenHash.setRevoked(true);
+
+        refreshTokenRepository.save(tokenHash);
     }
 
     private String hashToken(String rawToken) {
