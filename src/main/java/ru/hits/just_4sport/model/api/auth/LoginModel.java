@@ -1,9 +1,9 @@
-package ru.hits.just_4sport.model.api.user;
+package ru.hits.just_4sport.model.api.auth;
 
 import lombok.Data;
 
 @Data
-public class UserLoginModel {
+public class LoginModel {
 
     private String email;
 

@@ -1,4 +1,4 @@
-package ru.hits.just_4sport.model.api.user;
+package ru.hits.just_4sport.model.api.auth;
 
 import lombok.Data;
 import ru.hits.just_4sport.model.enums.Sport;
@@ -6,7 +6,7 @@ import ru.hits.just_4sport.model.enums.Sport;
 import java.util.List;
 
 @Data
-public class UserRegistrationModel {
+public class RegistrationModel {
 
     private String name;
 

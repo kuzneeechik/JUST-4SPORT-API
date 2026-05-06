@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.hits.just_4sport.infrastructure.exception.BadRequestException;
-import ru.hits.just_4sport.model.api.TokenModel;
-import ru.hits.just_4sport.model.api.user.UserLoginModel;
-import ru.hits.just_4sport.model.api.user.UserLogoutModel;
-import ru.hits.just_4sport.model.api.user.UserRegistrationModel;
+import ru.hits.just_4sport.model.api.auth.*;
 import ru.hits.just_4sport.model.domain.UserEntity;
 import ru.hits.just_4sport.repository.UserRepository;
 
@@ -20,7 +17,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
 
-    public TokenModel registration(UserRegistrationModel user) {
+    public TokenModel registration(RegistrationModel user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new BadRequestException("Аккаунт с таким email уже существует");
         }
@@ -37,7 +34,7 @@ public class AuthService {
         return createTokens(newUser);
     }
 
-    public TokenModel login(UserLoginModel user) {
+    public TokenModel login(LoginModel user) {
         var currentUser = userRepository.findByEmail(user.getEmail())
                 .orElseThrow(() -> new BadRequestException("Неверный email или пароль"));
 
@@ -48,8 +45,14 @@ public class AuthService {
         return createTokens(currentUser);
     }
 
-    public void logout(UserLogoutModel logoutData) {
-       refreshTokenService.revokeToken(logoutData.getToken());
+    public void logout(LogoutModel logoutData, String email) {
+       refreshTokenService.revokeToken(logoutData.getToken(), email);
+    }
+
+    public TokenModel refresh(TokenRefreshModel token) {
+        var user = refreshTokenService.revokeTokenAndReturnUser(token.getToken());
+
+        return createTokens(user);
     }
 
     private TokenModel createTokens(UserEntity user) {

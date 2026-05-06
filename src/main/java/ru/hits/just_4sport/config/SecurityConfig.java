@@ -28,8 +28,9 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/user/login",
-                                "/api/user/registration",
+                                "/api/auth/login",
+                                "/api/auth/registration",
+                                "/api/auth/refresh",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",

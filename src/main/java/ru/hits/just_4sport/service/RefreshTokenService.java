@@ -3,6 +3,7 @@ package ru.hits.just_4sport.service;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
+import ru.hits.just_4sport.infrastructure.exception.BadRequestException;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.domain.RefreshTokenEntity;
 import ru.hits.just_4sport.model.domain.UserEntity;
@@ -37,13 +38,38 @@ public class RefreshTokenService {
         return rawToken;
     }
 
-    public void revokeToken(String token) {
+    public void revokeToken(String token, String email) {
         var tokenHash = refreshTokenRepository.findByTokenHash(hashToken(token))
                 .orElseThrow(() -> new NotFoundException("Токен не найден"));
 
-        tokenHash.setRevoked(true);
+        if (!tokenHash.getUser().getEmail().equals(email)) {
+            throw new BadRequestException("Токен не принадлежит пользователю");
+        }
 
+        if (tokenHash.isRevoked()) {
+            return;
+        }
+
+        tokenHash.setRevoked(true);
         refreshTokenRepository.save(tokenHash);
+    }
+
+    public UserEntity revokeTokenAndReturnUser(String token) {
+        var tokenHash = refreshTokenRepository.findByTokenHash(hashToken(token))
+                .orElseThrow(() -> new NotFoundException("Токен не найден"));
+
+        if (tokenHash.isRevoked()) {
+            throw new BadRequestException("Токен отозван");
+        }
+
+        if (tokenHash.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new BadRequestException("Токен истёк");
+        }
+
+        tokenHash.setRevoked(true);
+        refreshTokenRepository.save(tokenHash);
+
+        return tokenHash.getUser();
     }
 
     private String hashToken(String rawToken) {
