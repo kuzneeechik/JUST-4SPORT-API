@@ -1,4 +1,4 @@
-package ru.hits.just_4sport.service;
+package ru.hits.just_4sport.service.auth;
 
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;

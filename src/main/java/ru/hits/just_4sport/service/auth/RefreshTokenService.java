@@ -1,4 +1,4 @@
-package ru.hits.just_4sport.service;
+package ru.hits.just_4sport.service.auth;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;

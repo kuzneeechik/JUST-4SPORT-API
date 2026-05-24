@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.hits.just_4sport.model.api.auth.*;
-import ru.hits.just_4sport.service.AuthService;
+import ru.hits.just_4sport.service.auth.AuthService;
 
 @RestController
 @RequestMapping("/api/auth")

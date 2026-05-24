@@ -11,7 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import ru.hits.just_4sport.service.JwtAuthenticationFilter;
+import ru.hits.just_4sport.service.auth.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
