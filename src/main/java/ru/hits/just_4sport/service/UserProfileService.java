@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserProfileService {
 
     private final UserRepository userRepository;
     private final EventsRepository eventsRepository;
@@ -50,6 +50,10 @@ public class UserService {
                 .setFavoriteSports(userProfile.getFavoriteSports());
 
         userRepository.save(user);
+    }
+
+    public void deleteUserProfile(UUID id) {
+        userRepository.deleteById(id);
     }
 
     public void setUserProfilePhoto(UUID id, UserPhotoModel photo) {
