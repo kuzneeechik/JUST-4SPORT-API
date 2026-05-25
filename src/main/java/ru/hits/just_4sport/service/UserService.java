@@ -52,4 +52,19 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void setUserProfilePhoto(UUID id, UserPhotoModel photo) {
+        var user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        var newPhoto = new PhotoEntity()
+                .setTitle(photo.getTitle())
+                .setPath(photo.getPath());
+
+        photoRepository.save(newPhoto);
+
+        user.setPhoto(newPhoto);
+
+        userRepository.save(user);
+    }
+
 }

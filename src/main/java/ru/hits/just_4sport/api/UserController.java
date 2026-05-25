@@ -3,7 +3,9 @@ package ru.hits.just_4sport.api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.hits.just_4sport.model.api.user.UserPhotoModel;
 import ru.hits.just_4sport.model.api.user.UserProfileModel;
+import ru.hits.just_4sport.model.api.user.UserUpdateProfileModel;
 import ru.hits.just_4sport.service.UserService;
 
 import java.util.UUID;
@@ -29,5 +31,14 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/{id}/photo")
+    public ResponseEntity<Void> setUserProfilePhoto(
+            @PathVariable UUID id,
+            @RequestBody UserPhotoModel photo
+    ) {
+        userProfileService.setUserProfilePhoto(id, photo);
+
+        return ResponseEntity.ok().build();
+    }
     }
 }
