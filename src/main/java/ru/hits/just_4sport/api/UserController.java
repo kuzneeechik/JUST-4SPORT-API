@@ -18,5 +18,16 @@ public class UserController {
     @GetMapping("/profile/{id}")
     public ResponseEntity<UserProfileModel> getUserProfile(@PathVariable UUID id) {
         return ResponseEntity.ok(userService.getUserProfile(id));
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateUserProfile(
+            @PathVariable UUID id,
+            @RequestBody UserUpdateProfileModel userProfile
+    ) {
+        userProfileService.updateUserProfile(id, userProfile);
+
+        return ResponseEntity.ok().build();
+    }
+
     }
 }

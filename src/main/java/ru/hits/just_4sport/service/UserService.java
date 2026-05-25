@@ -3,8 +3,12 @@ package ru.hits.just_4sport.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
+import ru.hits.just_4sport.model.api.user.UserPhotoModel;
 import ru.hits.just_4sport.model.api.user.UserProfileModel;
+import ru.hits.just_4sport.model.api.user.UserUpdateProfileModel;
+import ru.hits.just_4sport.model.domain.PhotoEntity;
 import ru.hits.just_4sport.repository.EventsRepository;
+import ru.hits.just_4sport.repository.PhotoRepository;
 import ru.hits.just_4sport.repository.UserRepository;
 
 import java.util.UUID;
@@ -15,6 +19,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final EventsRepository eventsRepository;
+    private final PhotoRepository photoRepository;
 
     public UserProfileModel getUserProfile(UUID id) {
         var user = userRepository.findById(id)
@@ -34,4 +39,17 @@ public class UserService {
 
         return profile;
     }
+
+    public void updateUserProfile(UUID id, UserUpdateProfileModel userProfile) {
+        var user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        user.setName(userProfile.getName())
+                .setNickname(userProfile.getNickname())
+                .setEmail(userProfile.getEmail())
+                .setFavoriteSports(userProfile.getFavoriteSports());
+
+        userRepository.save(user);
+    }
+
 }
