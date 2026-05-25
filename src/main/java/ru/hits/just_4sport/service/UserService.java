@@ -67,4 +67,16 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void deleteUserProfilePhoto(UUID id) {
+        var user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        var photo = user.getPhoto();
+
+        photoRepository.delete(photo);
+
+        user.setPhoto(null);
+
+        userRepository.save(user);
+    }
 }

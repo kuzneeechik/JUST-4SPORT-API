@@ -11,15 +11,16 @@ import ru.hits.just_4sport.service.UserService;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/user")
+@RequestMapping("api/profile")
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+    private final UserService userProfileService;
 
-    @GetMapping("/profile/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<UserProfileModel> getUserProfile(@PathVariable UUID id) {
-        return ResponseEntity.ok(userService.getUserProfile(id));
+        return ResponseEntity.ok(userProfileService.getUserProfile(id));
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateUserProfile(
@@ -40,5 +41,11 @@ public class UserController {
 
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{id}/photo")
+    public ResponseEntity<Void> deleteUserProfilePhoto(@PathVariable UUID id) {
+        userProfileService.deleteUserProfilePhoto(id);
+
+        return ResponseEntity.ok().build();
     }
 }
