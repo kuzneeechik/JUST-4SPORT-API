@@ -1,5 +1,6 @@
 package ru.hits.just_4sport.api;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,12 +20,12 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/registration")
-    public ResponseEntity<TokenModel> registration(@RequestBody RegistrationModel user) {
+    public ResponseEntity<TokenModel> registration(@Valid @RequestBody RegistrationModel user) {
         return ResponseEntity.ok(authService.registration(user));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenModel> login(@RequestBody LoginModel user) {
+    public ResponseEntity<TokenModel> login(@Valid @RequestBody LoginModel user) {
         return ResponseEntity.ok(authService.login(user));
     }
 
