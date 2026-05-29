@@ -9,4 +9,5 @@
 
     <include file="001-init.xml" relativeToChangelogFile="true"/>
     <include file="002-add-refresh-tokens.xml" relativeToChangelogFile="true"/>
+    <include file="003-add-event-date-end.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -1,12 +1,14 @@
 package ru.hits.just_4sport.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import ru.hits.just_4sport.model.domain.EventEntity;
 import ru.hits.just_4sport.model.domain.TeamEntity;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface EventsRepository extends JpaRepository<EventEntity, UUID> {
+public interface EventsRepository extends JpaRepository<EventEntity, UUID>,
+        JpaSpecificationExecutor<EventEntity> {
     List<EventEntity> findEventEntitiesByTeams(List<TeamEntity> teams);
 }

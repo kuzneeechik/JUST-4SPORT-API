@@ -29,8 +29,11 @@ public class EventEntity {
 
     private String description;
 
-    @Column(nullable = false)
-    private LocalDateTime date;
+    @Column(name = "date_start", nullable = false)
+    private LocalDateTime dateStart;
+
+    @Column(name = "date_end", nullable = false)
+    private LocalDateTime dateEnd;
 
     @Column(nullable = false)
     private String place;

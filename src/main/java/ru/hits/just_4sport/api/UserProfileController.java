@@ -1,5 +1,6 @@
 package ru.hits.just_4sport.api;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class UserProfileController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateUserProfile(
             @PathVariable UUID id,
-            @RequestBody UserUpdateProfileModel userProfile
+            @Valid @RequestBody UserUpdateProfileModel userProfile
     ) {
         userProfileService.updateUserProfile(id, userProfile);
 
