@@ -4,9 +4,10 @@ import org.mapstruct.Mapper;
 import ru.hits.just_4sport.model.api.CommentModel;
 import ru.hits.just_4sport.model.api.PhotoModel;
 import ru.hits.just_4sport.model.api.ScheduleModel;
-import ru.hits.just_4sport.model.api.TeamGameModel;
+import ru.hits.just_4sport.model.api.team.TeamGameModel;
 import ru.hits.just_4sport.model.api.event.EventModel;
 import ru.hits.just_4sport.model.api.event.EventShortModel;
+import ru.hits.just_4sport.model.api.user.UserModel;
 import ru.hits.just_4sport.model.domain.EventEntity;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public interface EventMapper {
 
     default EventModel toModel(
             EventEntity event,
+            UserModel author,
             PhotoModel photo,
             List<CommentModel> comments,
             ScheduleModel schedule,
@@ -39,7 +41,7 @@ public interface EventMapper {
                 .setSport(event.getSport())
                 .setEventType(event.getEventType())
                 .setSkillLevel(event.getSkillLevel())
-                .setAuthorName(event.getAuthor().getName())
+                .setAuthor(author)
                 .setPhoto(photo)
                 .setSchedule(schedule)
                 .setTeams(teams)

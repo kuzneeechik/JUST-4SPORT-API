@@ -2,6 +2,7 @@ package ru.hits.just_4sport.model.api;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+import ru.hits.just_4sport.model.api.team.TeamGameModel;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

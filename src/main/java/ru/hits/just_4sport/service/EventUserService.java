@@ -9,6 +9,7 @@ import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.event.EventFilterModel;
 import ru.hits.just_4sport.model.api.event.EventModel;
 import ru.hits.just_4sport.model.api.event.EventShortModel;
+import ru.hits.just_4sport.model.api.team.TeamModel;
 import ru.hits.just_4sport.model.domain.EventEntity;
 import ru.hits.just_4sport.model.enums.SortDirection;
 import ru.hits.just_4sport.model.enums.SortField;
@@ -16,6 +17,8 @@ import ru.hits.just_4sport.model.mapper.*;
 import ru.hits.just_4sport.repository.EventsRepository;
 import ru.hits.just_4sport.utils.EventSpecificationUtility;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -28,6 +31,7 @@ public class EventUserService {
     private final ScheduleMapper scheduleMapper;
     private final PhotoMapper photoMapper;
     private final TeamMapper teamMapper;
+    private final UserMapper userMapper;
 
     public Page<EventShortModel> getFilteredEvents(
             EventFilterModel filter,
@@ -54,6 +58,25 @@ public class EventUserService {
         return eventFactory(event);
     }
 
+    public List<TeamModel> getParticipants(UUID id) {
+        var event = eventsRepository.findEventEntitiesById(id)
+                .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
+
+        var teams = new ArrayList<TeamModel>();
+
+        for (var team : event.getTeams()) {
+            var members = team.getTeamMembers().stream()
+                    .map(userMapper::toModel)
+                    .toList();
+
+            var captain = userMapper.toModel(team.getCaptain());
+
+            teams.add(teamMapper.toModel(team, captain, members));
+        }
+
+        return teams;
+    }
+
     private Sort getSort(SortField sortField, SortDirection sortDirection) {
         var direction = SortDirection.DESC.equals(sortDirection) ? Sort.Direction.DESC : Sort.Direction.ASC;
 
@@ -76,8 +99,11 @@ public class EventUserService {
                 .map(teamMapper::toGameModel)
                 .toList();
 
+        var author = userMapper.toModel(event.getAuthor());
+
         return eventMapper.toModel(
                 event,
+                author,
                 photo,
                 comments,
                 schedule,

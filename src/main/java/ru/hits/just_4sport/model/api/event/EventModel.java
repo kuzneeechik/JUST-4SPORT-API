@@ -3,6 +3,8 @@ package ru.hits.just_4sport.model.api.event;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import ru.hits.just_4sport.model.api.*;
+import ru.hits.just_4sport.model.api.team.TeamGameModel;
+import ru.hits.just_4sport.model.api.user.UserModel;
 import ru.hits.just_4sport.model.enums.EventStatus;
 import ru.hits.just_4sport.model.enums.EventType;
 import ru.hits.just_4sport.model.enums.SkillLevel;
@@ -39,7 +41,7 @@ public class EventModel {
 
     private SkillLevel skillLevel;
 
-    private String authorName;
+    private UserModel author;
 
     private PhotoModel photo;
 
