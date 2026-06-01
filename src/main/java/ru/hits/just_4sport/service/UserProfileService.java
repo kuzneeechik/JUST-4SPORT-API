@@ -7,7 +7,7 @@ import ru.hits.just_4sport.model.api.user.UserPhotoModel;
 import ru.hits.just_4sport.model.api.user.UserProfileModel;
 import ru.hits.just_4sport.model.api.user.UserUpdateProfileModel;
 import ru.hits.just_4sport.model.domain.PhotoEntity;
-import ru.hits.just_4sport.repository.EventsRepository;
+import ru.hits.just_4sport.repository.EventRepository;
 import ru.hits.just_4sport.repository.PhotoRepository;
 import ru.hits.just_4sport.repository.UserRepository;
 
@@ -18,7 +18,7 @@ import java.util.UUID;
 public class UserProfileService {
 
     private final UserRepository userRepository;
-    private final EventsRepository eventsRepository;
+    private final EventRepository eventsRepository;
     private final PhotoRepository photoRepository;
 
     public UserProfileModel getUserProfile(UUID id) {

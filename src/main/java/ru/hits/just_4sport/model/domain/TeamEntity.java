@@ -3,6 +3,7 @@ package ru.hits.just_4sport.model.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Table(name = "teams")
+@Accessors(chain = true)
 public class TeamEntity {
 
     @Id

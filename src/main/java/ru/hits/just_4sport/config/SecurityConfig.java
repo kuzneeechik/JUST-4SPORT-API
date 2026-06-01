@@ -28,6 +28,8 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/api/events",
+                                "/api/events/{id}",
                                 "/api/auth/login",
                                 "/api/auth/registration",
                                 "/api/auth/refresh",

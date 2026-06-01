@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface EventsRepository extends JpaRepository<EventEntity, UUID>,
+public interface EventRepository extends JpaRepository<EventEntity, UUID>,
         JpaSpecificationExecutor<EventEntity> {
     List<EventEntity> findEventEntitiesByTeams(List<TeamEntity> teams);
 

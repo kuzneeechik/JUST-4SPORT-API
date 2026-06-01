@@ -9,12 +9,17 @@ import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.event.EventFilterModel;
 import ru.hits.just_4sport.model.api.event.EventModel;
 import ru.hits.just_4sport.model.api.event.EventShortModel;
+import ru.hits.just_4sport.model.api.team.TeamApplicationModel;
 import ru.hits.just_4sport.model.api.team.TeamModel;
 import ru.hits.just_4sport.model.domain.EventEntity;
+import ru.hits.just_4sport.model.domain.TeamEntity;
+import ru.hits.just_4sport.model.domain.UserEntity;
 import ru.hits.just_4sport.model.enums.SortDirection;
 import ru.hits.just_4sport.model.enums.SortField;
 import ru.hits.just_4sport.model.mapper.*;
-import ru.hits.just_4sport.repository.EventsRepository;
+import ru.hits.just_4sport.repository.EventRepository;
+import ru.hits.just_4sport.repository.TeamRepository;
+import ru.hits.just_4sport.repository.UserRepository;
 import ru.hits.just_4sport.utils.EventSpecificationUtility;
 
 import java.util.ArrayList;
@@ -25,13 +30,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class EventUserService {
 
-    private final EventsRepository eventsRepository;
+    private final EventRepository eventRepository;
     private final EventMapper eventMapper;
     private final CommentMapper commentMapper;
     private final ScheduleMapper scheduleMapper;
     private final PhotoMapper photoMapper;
     private final TeamMapper teamMapper;
     private final UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final TeamRepository teamRepository;
 
     public Page<EventShortModel> getFilteredEvents(
             EventFilterModel filter,
@@ -47,19 +54,19 @@ public class EventUserService {
                 size,
                 getSort(sortField, sortDirection));
 
-        return eventsRepository.findAll(filtering, pageable)
+        return eventRepository.findAll(filtering, pageable)
                 .map(eventMapper::toShortModel);
     }
 
     public EventModel getEventById(UUID id) {
-        var event = eventsRepository.findEventEntitiesById(id)
+        var event = eventRepository.findEventEntitiesById(id)
                 .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
 
         return eventFactory(event);
     }
 
     public List<TeamModel> getParticipants(UUID id) {
-        var event = eventsRepository.findEventEntitiesById(id)
+        var event = eventRepository.findEventEntitiesById(id)
                 .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
 
         var teams = new ArrayList<TeamModel>();
@@ -75,6 +82,37 @@ public class EventUserService {
         }
 
         return teams;
+    }
+
+    public void sendApplication(UUID id, TeamApplicationModel teamApplication) {
+        var event = eventRepository.findEventEntitiesById(id)
+                .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
+
+        var captain = userRepository.findByNickname(teamApplication.getCaptainNickname())
+                .orElseThrow(() -> new NotFoundException("Капитан команды не был найден"));
+
+        var members = new ArrayList<UserEntity>();
+
+        for (var memberNickname : teamApplication.getMembersNicknames()) {
+            var currentMember = userRepository.findByNickname(memberNickname)
+                    .orElseThrow(() ->
+                            new NotFoundException("Член команды " + memberNickname + " не был найден"));
+
+            members.add(currentMember);
+        }
+
+        var team = new TeamEntity()
+                .setEvent(event)
+                .setName(teamApplication.getName())
+                .setCaptain(captain)
+                .setTeamMembers(members)
+                .setContactInformation(teamApplication.getContactInformation());
+
+        teamRepository.save(team);
+
+        event.getTeams().add(team);
+
+        eventRepository.save(event);
     }
 
     private Sort getSort(SortField sortField, SortDirection sortDirection) {
