@@ -7,8 +7,12 @@
             http://www.liquibase.org/xml/ns/dbchangelog
             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <include file="001-init.xml" relativeToChangelogFile="true"/>
-    <include file="002-add-refresh-tokens.xml" relativeToChangelogFile="true"/>
-    <include file="003-add-event-date-end.xml" relativeToChangelogFile="true"/>
-    <include file="004-add-team-contact-info.xml" relativeToChangelogFile="true"/>
+    <changeSet id="004-add-team-contact-info" author="vasilina">
+        <addColumn tableName="teams">
+            <column name="contact_information" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

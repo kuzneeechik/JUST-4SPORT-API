@@ -30,4 +30,7 @@ public class TeamEntity {
 
     @ManyToMany(mappedBy = "teams", fetch = FetchType.LAZY)
     private List<UserEntity> teamMembers = new ArrayList<>();
+
+    @Column(name = "contact_information", nullable = false)
+    private String contactInformation;
 }
