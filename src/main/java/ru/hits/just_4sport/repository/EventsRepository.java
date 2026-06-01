@@ -6,9 +6,12 @@ import ru.hits.just_4sport.model.domain.EventEntity;
 import ru.hits.just_4sport.model.domain.TeamEntity;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface EventsRepository extends JpaRepository<EventEntity, UUID>,
         JpaSpecificationExecutor<EventEntity> {
     List<EventEntity> findEventEntitiesByTeams(List<TeamEntity> teams);
+
+    Optional<EventEntity> findEventEntitiesById(UUID id);
 }

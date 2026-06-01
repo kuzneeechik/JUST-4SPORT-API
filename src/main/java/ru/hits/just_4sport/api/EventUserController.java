@@ -3,17 +3,16 @@ package ru.hits.just_4sport.api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.hits.just_4sport.model.api.event.EventFilterModel;
+import ru.hits.just_4sport.model.api.event.EventModel;
 import ru.hits.just_4sport.model.api.event.EventShortModel;
 import ru.hits.just_4sport.model.enums.*;
 import ru.hits.just_4sport.service.EventUserService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/events")
@@ -56,5 +55,10 @@ public class EventUserController {
                 page,
                 size
         ));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<EventModel> getEventById(@PathVariable UUID id) {
+        return ResponseEntity.ok(eventUserService.getEventById(id));
     }
 }
