@@ -119,7 +119,7 @@ public class EventUserService {
         var direction = SortDirection.DESC.equals(sortDirection) ? Sort.Direction.DESC : Sort.Direction.ASC;
 
         return switch (sortField) {
-            case DATE -> Sort.by(direction, "startDate");
+            case DATE -> Sort.by(direction, "dateStart");
             case SortField.COST -> Sort.by(direction, "cost");
         };
     }
