@@ -42,12 +42,12 @@ public class EventSpecificationUtility {
 
         if (filter.getCostStart() != null) {
             specificationPredicates.add((root, query, criteriaBuilder) ->
-                    criteriaBuilder.greaterThanOrEqualTo(root.get("costStart"), filter.getCostStart()));
+                    criteriaBuilder.greaterThanOrEqualTo(root.get("cost"), filter.getCostStart()));
         }
 
         if (filter.getCostEnd() != null) {
             specificationPredicates.add((root, query, criteriaBuilder) ->
-                    criteriaBuilder.lessThanOrEqualTo(root.get("costEnd"), filter.getCostEnd()));
+                    criteriaBuilder.lessThanOrEqualTo(root.get("cost"), filter.getCostEnd()));
         }
 
         if (filter.getEventType() != null) {
