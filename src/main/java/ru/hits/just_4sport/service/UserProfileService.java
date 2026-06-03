@@ -2,6 +2,7 @@ package ru.hits.just_4sport.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.user.UserPhotoModel;
 import ru.hits.just_4sport.model.api.user.UserProfileModel;
@@ -54,8 +55,9 @@ public class UserProfileService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void deleteUserProfile(UUID id) {
-        refreshTokenRepository.deleteByUser_Id(id);
+        refreshTokenRepository.deleteAllByUserId(id);
 
         userRepository.deleteById(id);
     }
