@@ -9,6 +9,7 @@ import ru.hits.just_4sport.model.api.user.UserUpdateProfileModel;
 import ru.hits.just_4sport.model.domain.PhotoEntity;
 import ru.hits.just_4sport.repository.EventRepository;
 import ru.hits.just_4sport.repository.PhotoRepository;
+import ru.hits.just_4sport.repository.RefreshTokenRepository;
 import ru.hits.just_4sport.repository.UserRepository;
 
 import java.util.UUID;
@@ -20,6 +21,7 @@ public class UserProfileService {
     private final UserRepository userRepository;
     private final EventRepository eventsRepository;
     private final PhotoRepository photoRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public UserProfileModel getUserProfile(UUID id) {
         var user = userRepository.findById(id)
@@ -53,6 +55,8 @@ public class UserProfileService {
     }
 
     public void deleteUserProfile(UUID id) {
+        refreshTokenRepository.deleteByUser_Id(id);
+
         userRepository.deleteById(id);
     }
 
