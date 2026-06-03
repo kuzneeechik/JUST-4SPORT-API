@@ -33,9 +33,9 @@ public class UserProfileService {
                 .setFavoriteSports(user.getFavoriteSports())
                 .setAuthorEvents(user.getAuthorEvents());
 
-        var participantEvent = eventsRepository.findEventEntitiesByTeams(user.getTeams());
+        var participantEvents = eventsRepository.findEventEntitiesByAnyTeamIn(user.getTeams());
 
-        profile.setParticipantEvents(participantEvent);
+        profile.setParticipantEvents(participantEvents);
 
         return profile;
     }
