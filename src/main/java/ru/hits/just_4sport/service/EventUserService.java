@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.hits.just_4sport.infrastructure.exception.BadRequestException;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.event.EventFilterModel;
 import ru.hits.just_4sport.model.api.event.EventModel;
@@ -101,6 +102,15 @@ public class EventUserService {
             members.add(currentMember);
         }
 
+        var memberIds = members.stream()
+                .map(UserEntity::getId)
+                .toList();
+
+        if (teamRepository.existsTeamWithUsersInEvent(id, memberIds)) {
+            throw new BadRequestException("Один из членов команды уже зарегистрирован" +
+                    " на мероприятие в составе другой команды");
+        }
+
         var team = new TeamEntity()
                 .setEvent(event)
                 .setName(teamApplication.getName())
@@ -111,6 +121,18 @@ public class EventUserService {
         teamRepository.save(team);
 
         event.getTeams().add(team);
+
+        eventRepository.save(event);
+    }
+
+    public void cancelApplication(UUID id, String userEmail) {
+        var event = eventRepository.findEventEntitiesById(id)
+                .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
+
+        var user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        event.getTeams().removeIf(team -> team.getCaptain().equals(user));
 
         eventRepository.save(event);
     }

@@ -48,11 +48,6 @@ public class UserEntity {
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
     private List<EventEntity> authorEvents = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "user_teams",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "team_id")
-    )
+    @ManyToMany(mappedBy = "teams", fetch = FetchType.LAZY)
     private List<TeamEntity> teams = new ArrayList<>();
 }

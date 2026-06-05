@@ -16,10 +16,10 @@ public interface EventRepository extends JpaRepository<EventEntity, UUID>,
     Optional<EventEntity> findEventEntitiesById(UUID id);
 
     @Query("""
-    select e
-    from EventEntity e
-        join e.teams t
-    where t in :teams
+        select e
+        from EventEntity e
+            join e.teams t
+        where t in :teams
     """)
     List<EventEntity> findEventEntitiesByAnyTeamIn(@Param("teams") List<TeamEntity> teams);
 }

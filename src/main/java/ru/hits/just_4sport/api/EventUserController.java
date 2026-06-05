@@ -3,6 +3,8 @@ package ru.hits.just_4sport.api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import ru.hits.just_4sport.model.api.event.EventFilterModel;
 import ru.hits.just_4sport.model.api.event.EventModel;
@@ -76,6 +78,16 @@ public class EventUserController {
             @RequestBody TeamApplicationModel teamApplication
     ) {
         eventUserService.sendApplication(id, teamApplication);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}/application")
+    public ResponseEntity<Void> deleteApplication(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails user
+    ) {
+        eventUserService.cancelApplication(id, user.getUsername());
 
         return ResponseEntity.ok().build();
     }

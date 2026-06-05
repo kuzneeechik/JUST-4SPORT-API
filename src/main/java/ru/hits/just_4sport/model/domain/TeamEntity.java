@@ -30,7 +30,12 @@ public class TeamEntity {
     @JoinColumn(name = "captain_id", nullable = false)
     private UserEntity captain;
 
-    @ManyToMany(mappedBy = "teams", fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_teams",
+            joinColumns = @JoinColumn(name = "team_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     private List<UserEntity> teamMembers = new ArrayList<>();
 
     @Column(name = "contact_information", nullable = false)
