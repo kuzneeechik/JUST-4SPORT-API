@@ -15,6 +15,7 @@ import ru.hits.just_4sport.model.api.team.TeamModel;
 import ru.hits.just_4sport.model.domain.EventEntity;
 import ru.hits.just_4sport.model.domain.TeamEntity;
 import ru.hits.just_4sport.model.domain.UserEntity;
+import ru.hits.just_4sport.model.enums.EventStatus;
 import ru.hits.just_4sport.model.enums.SortDirection;
 import ru.hits.just_4sport.model.enums.SortField;
 import ru.hits.just_4sport.model.mapper.*;
@@ -88,6 +89,11 @@ public class EventUserService {
     public void sendApplication(UUID id, TeamApplicationModel teamApplication) {
         var event = eventRepository.findEventEntitiesById(id)
                 .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
+
+        if (event.getTeamsNumber() == event.getTeams().size() ||
+            event.getEventStatus() != EventStatus.WILL_BE) {
+            throw new BadRequestException("Набор команд на это мероприятие уже завершён");
+        }
 
         var captain = userRepository.findByNickname(teamApplication.getCaptainNickname())
                 .orElseThrow(() -> new NotFoundException("Капитан команды не был найден"));
