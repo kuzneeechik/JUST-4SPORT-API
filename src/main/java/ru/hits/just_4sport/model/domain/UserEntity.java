@@ -48,6 +48,6 @@ public class UserEntity {
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
     private List<EventEntity> authorEvents = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "teams", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "teamMembers", fetch = FetchType.LAZY)
     private List<TeamEntity> teams = new ArrayList<>();
 }
