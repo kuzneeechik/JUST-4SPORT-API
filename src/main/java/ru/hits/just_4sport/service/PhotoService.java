@@ -3,14 +3,15 @@ package ru.hits.just_4sport.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hits.just_4sport.infrastructure.exception.BadRequestException;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
+import ru.hits.just_4sport.model.api.FileModel;
 import ru.hits.just_4sport.properties.UploadProperties;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -23,9 +24,9 @@ public class PhotoService {
 
     private final UploadProperties uploadProperties;
 
-    public Resource getPhoto(String photoPath) {
+    public FileModel getPhoto(String photoPath) {
         try {
-            Path path = Path.of(photoPath).normalize();
+            Path path = Path.of(uploadProperties.profilePhotosDir()).resolve(photoPath).normalize();
 
             Resource resource = new UrlResource(path.toUri());
 
@@ -33,8 +34,12 @@ public class PhotoService {
                 throw new NotFoundException("Фото не найдено");
             }
 
-            return resource;
-        } catch (MalformedURLException exception) {
+            var contentType = Files.probeContentType(path);
+
+            return new FileModel()
+                    .setResource(resource)
+                    .setMediaType(MediaType.parseMediaType(contentType));
+        } catch (Exception exception) {
             throw new NotFoundException("Фото не найдено");
         }
     }

@@ -9,7 +9,6 @@ import ru.hits.just_4sport.model.api.user.UserProfileModel;
 import ru.hits.just_4sport.model.api.user.UserUpdateProfileModel;
 import ru.hits.just_4sport.model.domain.PhotoEntity;
 import ru.hits.just_4sport.model.mapper.PhotoMapper;
-import ru.hits.just_4sport.properties.UploadProperties;
 import ru.hits.just_4sport.repository.EventRepository;
 import ru.hits.just_4sport.repository.PhotoRepository;
 import ru.hits.just_4sport.repository.RefreshTokenRepository;
@@ -27,7 +26,6 @@ public class UserProfileService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PhotoMapper photoMapper;
     private final PhotoService photoService;
-    private final UploadProperties uploadProperties;
 
     public UserProfileModel getUserProfile(UUID id) {
         var user = userRepository.findById(id)
@@ -84,7 +82,7 @@ public class UserProfileService {
 
         var photoEntity = new PhotoEntity()
                 .setTitle(photo.getOriginalFilename())
-                .setPath(uploadProperties.profilePhotosDir() + photoName);
+                .setPath(photoName);
 
         var oldPhoto = user.getPhoto();
 

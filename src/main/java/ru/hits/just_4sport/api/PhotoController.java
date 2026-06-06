@@ -2,7 +2,6 @@ package ru.hits.just_4sport.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,10 +18,10 @@ public class PhotoController {
 
     @GetMapping("/{photoPath}")
     public ResponseEntity<Resource> getPhoto(@PathVariable String photoPath) {
-        Resource resource = photoService.getPhoto(photoPath);
+        var file = photoService.getPhoto(photoPath);
 
         return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(resource);
+                .contentType(file.getMediaType())
+                .body(file.getResource());
     }
 }

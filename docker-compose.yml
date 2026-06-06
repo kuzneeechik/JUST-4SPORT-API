@@ -32,6 +32,9 @@ services:
       OPENAPI_SERVER_URL: ${OPENAPI_SERVER_URL}
     ports:
       - "8067:8081"
+    volumes:
+      - uploads-data:/app/uploads
 
 volumes:
   postgres-data:
+  uploads-data:
