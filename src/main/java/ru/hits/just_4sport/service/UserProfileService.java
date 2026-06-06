@@ -43,6 +43,13 @@ public class UserProfileService {
         return profile;
     }
 
+    public UserProfileModel getMyProfile(String email) {
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        return getUserProfile(user.getId());
+    }
+
     public void updateUserProfile(UUID id, UserUpdateProfileModel userProfile) {
         var user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));

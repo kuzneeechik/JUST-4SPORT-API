@@ -3,6 +3,8 @@ package ru.hits.just_4sport.api;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import ru.hits.just_4sport.model.api.user.UserPhotoModel;
 import ru.hits.just_4sport.model.api.user.UserProfileModel;
@@ -17,6 +19,11 @@ import java.util.UUID;
 public class UserProfileController {
 
     private final UserProfileService userProfileService;
+
+    @GetMapping
+    public ResponseEntity<UserProfileModel> getMyProfile(@AuthenticationPrincipal UserDetails user) {
+        return ResponseEntity.ok(userProfileService.getMyProfile(user.getUsername()));
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserProfileModel> getUserProfile(@PathVariable UUID id) {
