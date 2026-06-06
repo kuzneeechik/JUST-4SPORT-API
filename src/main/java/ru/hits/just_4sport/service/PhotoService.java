@@ -70,7 +70,7 @@ public class PhotoService {
         }
 
         try {
-            Path imagePath = Path.of(path).normalize();
+            Path imagePath = Path.of(uploadProperties.profilePhotosDir()).resolve(path).normalize();
 
             Files.deleteIfExists(imagePath);
         } catch (IOException e) {

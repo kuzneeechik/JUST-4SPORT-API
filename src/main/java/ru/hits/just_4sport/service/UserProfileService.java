@@ -104,11 +104,11 @@ public class UserProfileService {
             return;
         }
 
+        photoService.deleteImage(photo.getPath());
+
         photoRepository.delete(photo);
 
         user.setPhoto(null);
         userRepository.save(user);
-
-        photoService.deleteImage(photo.getPath());
     }
 }
