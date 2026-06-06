@@ -4,7 +4,7 @@ server:
 
 app:
   uploads:
-    profile-photos-dir: uploads/profile-photos
+    profile-photos-dir: uploads/profile-photos/
 
 spring:
   application:

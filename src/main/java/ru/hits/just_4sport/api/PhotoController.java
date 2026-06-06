@@ -17,9 +17,9 @@ public class PhotoController {
 
     private final PhotoService photoService;
 
-    @GetMapping("/{photoName}")
-    public ResponseEntity<Resource> getPhoto(@PathVariable String photoName) {
-        Resource resource = photoService.getPhoto(photoName);
+    @GetMapping("/{photoPath}")
+    public ResponseEntity<Resource> getPhoto(@PathVariable String photoPath) {
+        Resource resource = photoService.getPhoto(photoPath);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)

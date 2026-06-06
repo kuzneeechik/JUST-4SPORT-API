@@ -23,9 +23,9 @@ public class PhotoService {
 
     private final UploadProperties uploadProperties;
 
-    public Resource getPhoto(String photoName) {
+    public Resource getPhoto(String photoPath) {
         try {
-            Path path = Path.of(uploadProperties.profilePhotosDir()).resolve(photoName).normalize();
+            Path path = Path.of(photoPath).normalize();
 
             Resource resource = new UrlResource(path.toUri());
 
