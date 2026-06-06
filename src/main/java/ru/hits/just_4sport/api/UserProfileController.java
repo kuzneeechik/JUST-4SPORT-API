@@ -2,11 +2,12 @@ package ru.hits.just_4sport.api;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import ru.hits.just_4sport.model.api.user.UserPhotoModel;
+import org.springframework.web.multipart.MultipartFile;
 import ru.hits.just_4sport.model.api.user.UserProfileModel;
 import ru.hits.just_4sport.model.api.user.UserUpdateProfileModel;
 import ru.hits.just_4sport.service.UserProfileService;
@@ -47,19 +48,24 @@ public class UserProfileController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}/photo")
+    @PutMapping(
+            value = "/photo",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     public ResponseEntity<Void> setUserProfilePhoto(
-            @PathVariable UUID id,
-            @RequestBody UserPhotoModel photo
+            @AuthenticationPrincipal UserDetails user,
+            @RequestPart("file") MultipartFile photo
     ) {
-        userProfileService.setUserProfilePhoto(id, photo);
+        userProfileService.setUserProfilePhoto(user.getUsername(), photo);
 
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{id}/photo")
-    public ResponseEntity<Void> deleteUserProfilePhoto(@PathVariable UUID id) {
-        userProfileService.deleteUserProfilePhoto(id);
+    @DeleteMapping("/photo")
+    public ResponseEntity<Void> deleteUserProfilePhoto(
+            @AuthenticationPrincipal UserDetails user
+    ) {
+        userProfileService.deleteUserProfilePhoto(user.getUsername());
 
         return ResponseEntity.ok().build();
     }
