@@ -3,6 +3,7 @@ package ru.hits.just_4sport.api;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -71,7 +72,7 @@ public class EventUserController {
         return ResponseEntity.ok(eventUserService.getEventById(id));
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<IdModel> createEvent(
             @AuthenticationPrincipal UserDetails user,
             @Valid @RequestPart("event") EventCreateModel event,
