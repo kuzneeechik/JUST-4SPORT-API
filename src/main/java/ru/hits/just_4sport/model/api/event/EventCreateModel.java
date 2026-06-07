@@ -1,8 +1,6 @@
 package ru.hits.just_4sport.model.api.event;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import ru.hits.just_4sport.model.enums.EventType;
 import ru.hits.just_4sport.model.enums.SkillLevel;
@@ -19,12 +17,13 @@ public class EventCreateModel {
     @Size(max = 255, message = "Слишком длинное название")
     private String name;
 
+    @Size(max = 2000, message = "Слишком длинное описание")
     private String description;
 
-    @NotBlank(message = "Указать дату начала мероприятия обязательно")
+    @NotNull(message = "Указать дату начала мероприятия обязательно")
     private LocalDateTime dateStart;
 
-    @NotBlank(message = "Указать дату окончания мероприятия обязательно")
+    @NotNull(message = "Указать дату окончания мероприятия обязательно")
     private LocalDateTime dateEnd;
 
     @NotBlank(message = "Необходимо указать место проведения мероприятия")
@@ -32,23 +31,23 @@ public class EventCreateModel {
     @Size(max = 255, message = "Слишком длинное место")
     private String place;
 
-    @NotBlank(message = "Необходимо указать стоимость участия в мероприятии")
-    @Min(value = 0, message = "Стоимость не может быть меньше нуля")
+    @NotNull(message = "Необходимо указать стоимость участия в мероприятии")
+    @DecimalMin(value = "0.0", message = "Стоимость не может быть меньше нуля")
     private BigDecimal cost;
 
-    @NotBlank(message = "Необходимо указать вид спорта")
+    @NotNull(message = "Необходимо указать вид спорта")
     private Sport sport;
 
-    @NotBlank(message = "Необходимо указать вид активности")
+    @NotNull(message = "Необходимо указать вид активности")
     private EventType eventType;
 
-    @NotBlank(message = "Необходимо указать уровень подготовки")
+    @NotNull(message = "Необходимо указать уровень подготовки")
     private SkillLevel skillLevel;
 
-    @NotBlank(message = "Необходимо указать дедлайн для подачи заявки на участие")
+    @NotNull(message = "Необходимо указать дедлайн для подачи заявки на участие")
     private LocalDateTime deadline;
 
-    @NotBlank(message = "Необходимо указать количество команд, которые будут участвовать в мероприятии")
+    @NotNull(message = "Необходимо указать количество команд, которые будут участвовать в мероприятии")
     @Min(value = 1, message = "К участию должна приглашаться хотя бы одна команда")
     private Integer teamsNumber;
 }
