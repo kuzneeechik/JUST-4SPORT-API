@@ -131,8 +131,6 @@ public class EventUserService {
             throw new BadRequestException("Некорректная дата дедлайна");
         }
 
-        var photoEntity = setPhoto(photo);
-
         var eventEntity = new EventEntity()
                 .setName(event.getName())
                 .setDescription(event.getDescription())
@@ -145,8 +143,13 @@ public class EventUserService {
                 .setSkillLevel(event.getSkillLevel())
                 .setDeadline(event.getDeadline())
                 .setTeamsNumber(event.getTeamsNumber())
-                .setPhoto(photoEntity)
                 .setAuthor(author);
+
+        if (photo != null) {
+            var photoEntity = setPhoto(photo);
+
+            eventEntity.setPhoto(photoEntity);
+        }
 
         eventRepository.save(eventEntity);
 
