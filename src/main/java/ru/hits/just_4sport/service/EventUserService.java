@@ -5,14 +5,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import ru.hits.just_4sport.infrastructure.exception.BadRequestException;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
+import ru.hits.just_4sport.model.api.IdModel;
+import ru.hits.just_4sport.model.api.event.EventCreateModel;
 import ru.hits.just_4sport.model.api.event.EventFilterModel;
 import ru.hits.just_4sport.model.api.event.EventModel;
 import ru.hits.just_4sport.model.api.event.EventShortModel;
 import ru.hits.just_4sport.model.api.team.TeamApplicationModel;
 import ru.hits.just_4sport.model.api.team.TeamModel;
 import ru.hits.just_4sport.model.domain.EventEntity;
+import ru.hits.just_4sport.model.domain.PhotoEntity;
 import ru.hits.just_4sport.model.domain.TeamEntity;
 import ru.hits.just_4sport.model.domain.UserEntity;
 import ru.hits.just_4sport.model.enums.EventStatus;
@@ -24,6 +28,7 @@ import ru.hits.just_4sport.repository.TeamRepository;
 import ru.hits.just_4sport.repository.UserRepository;
 import ru.hits.just_4sport.utils.EventSpecificationUtility;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -41,6 +46,7 @@ public class EventUserService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
+    private final PhotoService photoService;
 
     public Page<EventShortModel> getFilteredEvents(
             EventFilterModel filter,
@@ -64,7 +70,27 @@ public class EventUserService {
         var event = eventRepository.findEventEntitiesById(id)
                 .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
 
-        return eventFactory(event);
+        var photo = photoMapper.toModel(event.getPhoto());
+
+        var comments = event.getComments().stream()
+                .map(commentMapper::toModel)
+                .toList();
+
+        var schedule = scheduleMapper.toModel(event.getSchedule());
+
+        var teams =  event.getTeams().stream()
+                .map(teamMapper::toGameModel)
+                .toList();
+
+        var author = userMapper.toModel(event.getAuthor());
+
+        return eventMapper.toModel(
+                event,
+                author,
+                photo,
+                comments,
+                schedule,
+                teams);
     }
 
     public List<TeamModel> getParticipants(UUID id) {
@@ -86,12 +112,54 @@ public class EventUserService {
         return teams;
     }
 
+    public IdModel createEvent(
+            String email,
+            EventCreateModel event,
+            MultipartFile photo
+    ) {
+        var author = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Автор не найден среди пользователей"));
+
+        if (event.getDateStart().isBefore(LocalDateTime.now()) ||
+                event.getDateEnd().isBefore(LocalDateTime.now()) ||
+                event.getDateEnd().isBefore(event.getDateStart())) {
+            throw new BadRequestException("Некорректная дата начала или окончания мероприятия");
+        }
+
+        if (event.getDeadline().isBefore(LocalDateTime.now()) ||
+                event.getDeadline().isAfter(event.getDateStart())) {
+            throw new BadRequestException("Некорректная дата дедлайна");
+        }
+
+        var photoEntity = setPhoto(photo);
+
+        var eventEntity = new EventEntity()
+                .setName(event.getName())
+                .setDescription(event.getDescription())
+                .setDateStart(event.getDateStart())
+                .setDateEnd(event.getDateEnd())
+                .setPlace(event.getPlace())
+                .setCost(event.getCost())
+                .setSport(event.getSport())
+                .setEventType(event.getEventType())
+                .setSkillLevel(event.getSkillLevel())
+                .setDeadline(event.getDeadline())
+                .setTeamsNumber(event.getTeamsNumber())
+                .setPhoto(photoEntity)
+                .setAuthor(author);
+
+        eventRepository.save(eventEntity);
+
+        return new IdModel().setId(eventEntity.getId());
+    }
+
     public void sendApplication(UUID id, TeamApplicationModel teamApplication) {
         var event = eventRepository.findEventEntitiesById(id)
                 .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
 
         if (event.getTeamsNumber() == event.getTeams().size() ||
-            event.getEventStatus() != EventStatus.WILL_BE) {
+                event.getEventStatus() != EventStatus.WILL_BE ||
+                event.getDeadline().isBefore(LocalDateTime.now())) {
             throw new BadRequestException("Набор команд на это мероприятие уже завершён");
         }
 
@@ -138,6 +206,10 @@ public class EventUserService {
         var user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
+        if (event.getDeadline().isBefore(LocalDateTime.now())) {
+            throw new BadRequestException("После дедлайна нельзя отменить регистрацию на мероприятие");
+        }
+
         event.getTeams().removeIf(team -> team.getCaptain().equals(user));
 
         eventRepository.save(event);
@@ -152,27 +224,13 @@ public class EventUserService {
         };
     }
 
-    private EventModel eventFactory(EventEntity event) {
-        var photo = photoMapper.toModel(event.getPhoto());
+    private PhotoEntity setPhoto(MultipartFile photo) {
+        photoService.validateImage(photo);
 
-        var comments = event.getComments().stream()
-                .map(commentMapper::toModel)
-                .toList();
+        String photoName = photoService.saveImage(photo);
 
-        var schedule = scheduleMapper.toModel(event.getSchedule());
-
-        var teams =  event.getTeams().stream()
-                .map(teamMapper::toGameModel)
-                .toList();
-
-        var author = userMapper.toModel(event.getAuthor());
-
-        return eventMapper.toModel(
-                event,
-                author,
-                photo,
-                comments,
-                schedule,
-                teams);
+        return new PhotoEntity()
+                .setTitle(photo.getOriginalFilename())
+                .setPath(photoName);
     }
 }

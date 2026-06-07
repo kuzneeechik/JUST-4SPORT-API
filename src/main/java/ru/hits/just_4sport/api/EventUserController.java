@@ -1,11 +1,15 @@
 package ru.hits.just_4sport.api;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import ru.hits.just_4sport.model.api.IdModel;
+import ru.hits.just_4sport.model.api.event.EventCreateModel;
 import ru.hits.just_4sport.model.api.event.EventFilterModel;
 import ru.hits.just_4sport.model.api.event.EventModel;
 import ru.hits.just_4sport.model.api.event.EventShortModel;
@@ -65,6 +69,15 @@ public class EventUserController {
     @GetMapping("/{id}")
     public ResponseEntity<EventModel> getEventById(@PathVariable UUID id) {
         return ResponseEntity.ok(eventUserService.getEventById(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<IdModel> createEvent(
+            @AuthenticationPrincipal UserDetails user,
+            @Valid @RequestPart("event") EventCreateModel event,
+            @RequestPart(value = "file", required = false) MultipartFile photo
+    ) {
+        return ResponseEntity.ok(eventUserService.createEvent(user.getUsername(), event, photo));
     }
 
     @GetMapping("/{id}/participants")

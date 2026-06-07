@@ -3,6 +3,7 @@ package ru.hits.just_4sport.model.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import ru.hits.just_4sport.model.enums.*;
 
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Table(name = "events")
+@Accessors(chain = true)
 public class EventEntity {
 
     @Id
@@ -57,7 +59,7 @@ public class EventEntity {
     @JoinColumn(name = "author_id", nullable = false)
     private UserEntity author;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "photo_id")
     private PhotoEntity photo;
 
