@@ -1,5 +1,8 @@
 package ru.hits.just_4sport.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Encoding;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -72,6 +75,19 @@ public class EventUserController {
         return ResponseEntity.ok(eventUserService.getEventById(id));
     }
 
+    @Operation(
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            encoding = {
+                                    @Encoding(
+                                            name = "event",
+                                            contentType = MediaType.APPLICATION_JSON_VALUE
+                                    )
+                            }
+                    )
+            )
+    )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<IdModel> createEvent(
             @AuthenticationPrincipal UserDetails user,
