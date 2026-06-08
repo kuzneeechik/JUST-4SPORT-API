@@ -1,4 +1,4 @@
-package ru.hits.just_4sport.model.api;
+package ru.hits.just_4sport.model.api.comment;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

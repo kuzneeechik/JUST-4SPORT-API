@@ -1,9 +1,10 @@
 package ru.hits.just_4sport.model.mapper;
 
 import org.mapstruct.Mapper;
-import ru.hits.just_4sport.model.api.CommentModel;
+import ru.hits.just_4sport.model.api.comment.CommentModel;
 import ru.hits.just_4sport.model.api.PhotoModel;
 import ru.hits.just_4sport.model.api.ScheduleModel;
+import ru.hits.just_4sport.model.api.event.EventCreateModel;
 import ru.hits.just_4sport.model.api.team.TeamGameModel;
 import ru.hits.just_4sport.model.api.event.EventModel;
 import ru.hits.just_4sport.model.api.event.EventShortModel;
@@ -48,5 +49,24 @@ public interface EventMapper {
                 .setDeadline(event.getDeadline())
                 .setTeamsNumber(event.getTeamsNumber())
                 .setComments(comments);
+    }
+
+    default EventEntity toEntity(EventCreateModel event) {
+        if (event == null) {
+            return null;
+        }
+
+        return new EventEntity()
+                .setName(event.getName())
+                .setDescription(event.getDescription())
+                .setDateStart(event.getDateStart())
+                .setDateEnd(event.getDateEnd())
+                .setPlace(event.getPlace())
+                .setCost(event.getCost())
+                .setSport(event.getSport())
+                .setEventType(event.getEventType())
+                .setSkillLevel(event.getSkillLevel())
+                .setDeadline(event.getDeadline())
+                .setTeamsNumber(event.getTeamsNumber());
     }
 }

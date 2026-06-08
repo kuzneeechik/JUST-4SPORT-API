@@ -14,7 +14,6 @@ import ru.hits.just_4sport.model.api.event.EventFilterModel;
 import ru.hits.just_4sport.model.api.event.EventModel;
 import ru.hits.just_4sport.model.api.event.EventShortModel;
 import ru.hits.just_4sport.model.api.team.TeamModel;
-import ru.hits.just_4sport.model.domain.EventEntity;
 import ru.hits.just_4sport.model.domain.PhotoEntity;
 import ru.hits.just_4sport.model.enums.SortDirection;
 import ru.hits.just_4sport.model.enums.SortField;
@@ -125,19 +124,8 @@ public class EventUserService {
             throw new BadRequestException("Некорректная дата дедлайна");
         }
 
-        var eventEntity = new EventEntity()
-                .setName(event.getName())
-                .setDescription(event.getDescription())
-                .setDateStart(event.getDateStart())
-                .setDateEnd(event.getDateEnd())
-                .setPlace(event.getPlace())
-                .setCost(event.getCost())
-                .setSport(event.getSport())
-                .setEventType(event.getEventType())
-                .setSkillLevel(event.getSkillLevel())
-                .setDeadline(event.getDeadline())
-                .setTeamsNumber(event.getTeamsNumber())
-                .setAuthor(author);
+        var eventEntity = eventMapper.toEntity(event);
+        eventEntity.setAuthor(author);
 
         if (photo != null) {
             var photoEntity = setPhoto(photo);

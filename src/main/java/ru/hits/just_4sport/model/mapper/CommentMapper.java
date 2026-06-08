@@ -1,7 +1,7 @@
 package ru.hits.just_4sport.model.mapper;
 
 import org.mapstruct.Mapper;
-import ru.hits.just_4sport.model.api.CommentModel;
+import ru.hits.just_4sport.model.api.comment.CommentModel;
 import ru.hits.just_4sport.model.domain.CommentEntity;
 
 @Mapper(componentModel = "spring")

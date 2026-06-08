@@ -3,6 +3,7 @@ package ru.hits.just_4sport.model.api.event;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import ru.hits.just_4sport.model.api.*;
+import ru.hits.just_4sport.model.api.comment.CommentModel;
 import ru.hits.just_4sport.model.api.team.TeamGameModel;
 import ru.hits.just_4sport.model.api.user.UserModel;
 import ru.hits.just_4sport.model.enums.EventStatus;
