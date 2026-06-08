@@ -17,7 +17,6 @@ import ru.hits.just_4sport.model.api.event.EventCreateModel;
 import ru.hits.just_4sport.model.api.event.EventFilterModel;
 import ru.hits.just_4sport.model.api.event.EventModel;
 import ru.hits.just_4sport.model.api.event.EventShortModel;
-import ru.hits.just_4sport.model.api.team.TeamApplicationModel;
 import ru.hits.just_4sport.model.api.team.TeamModel;
 import ru.hits.just_4sport.model.enums.*;
 import ru.hits.just_4sport.service.EventUserService;
@@ -100,25 +99,5 @@ public class EventUserController {
     @GetMapping("/{id}/participants")
     public ResponseEntity<List<TeamModel>> getParticipants(@PathVariable UUID id) {
         return ResponseEntity.ok(eventUserService.getParticipants(id));
-    }
-
-    @PostMapping("/{id}/application")
-    public ResponseEntity<Void> sendApplication(
-            @PathVariable UUID id,
-            @RequestBody TeamApplicationModel teamApplication
-    ) {
-        eventUserService.sendApplication(id, teamApplication);
-
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/{id}/application")
-    public ResponseEntity<Void> deleteApplication(
-            @PathVariable UUID id,
-            @AuthenticationPrincipal UserDetails user
-    ) {
-        eventUserService.cancelApplication(id, user.getUsername());
-
-        return ResponseEntity.ok().build();
     }
 }

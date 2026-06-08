@@ -13,18 +13,13 @@ import ru.hits.just_4sport.model.api.event.EventCreateModel;
 import ru.hits.just_4sport.model.api.event.EventFilterModel;
 import ru.hits.just_4sport.model.api.event.EventModel;
 import ru.hits.just_4sport.model.api.event.EventShortModel;
-import ru.hits.just_4sport.model.api.team.TeamApplicationModel;
 import ru.hits.just_4sport.model.api.team.TeamModel;
 import ru.hits.just_4sport.model.domain.EventEntity;
 import ru.hits.just_4sport.model.domain.PhotoEntity;
-import ru.hits.just_4sport.model.domain.TeamEntity;
-import ru.hits.just_4sport.model.domain.UserEntity;
-import ru.hits.just_4sport.model.enums.EventStatus;
 import ru.hits.just_4sport.model.enums.SortDirection;
 import ru.hits.just_4sport.model.enums.SortField;
 import ru.hits.just_4sport.model.mapper.*;
 import ru.hits.just_4sport.repository.EventRepository;
-import ru.hits.just_4sport.repository.TeamRepository;
 import ru.hits.just_4sport.repository.UserRepository;
 import ru.hits.just_4sport.utils.EventSpecificationUtility;
 
@@ -45,7 +40,6 @@ public class EventUserService {
     private final TeamMapper teamMapper;
     private final UserMapper userMapper;
     private final UserRepository userRepository;
-    private final TeamRepository teamRepository;
     private final PhotoService photoService;
 
     public Page<EventShortModel> getFilteredEvents(
@@ -154,68 +148,6 @@ public class EventUserService {
         eventRepository.save(eventEntity);
 
         return new IdModel().setId(eventEntity.getId());
-    }
-
-    public void sendApplication(UUID id, TeamApplicationModel teamApplication) {
-        var event = eventRepository.findEventEntitiesById(id)
-                .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
-
-        if (event.getTeamsNumber() == event.getTeams().size() ||
-                event.getEventStatus() != EventStatus.WILL_BE ||
-                event.getDeadline().isBefore(LocalDateTime.now())) {
-            throw new BadRequestException("Набор команд на это мероприятие уже завершён");
-        }
-
-        var captain = userRepository.findByNickname(teamApplication.getCaptainNickname())
-                .orElseThrow(() -> new NotFoundException("Капитан команды не был найден"));
-
-        var members = new ArrayList<UserEntity>();
-
-        for (var memberNickname : teamApplication.getMembersNicknames()) {
-            var currentMember = userRepository.findByNickname(memberNickname)
-                    .orElseThrow(() ->
-                            new NotFoundException("Член команды " + memberNickname + " не был найден"));
-
-            members.add(currentMember);
-        }
-
-        var memberIds = members.stream()
-                .map(UserEntity::getId)
-                .toList();
-
-        if (teamRepository.existsTeamWithUsersInEvent(id, memberIds)) {
-            throw new BadRequestException("Один из членов команды уже зарегистрирован" +
-                    " на мероприятие в составе другой команды");
-        }
-
-        var team = new TeamEntity()
-                .setEvent(event)
-                .setName(teamApplication.getName())
-                .setCaptain(captain)
-                .setTeamMembers(members)
-                .setContactInformation(teamApplication.getContactInformation());
-
-        teamRepository.save(team);
-
-        event.getTeams().add(team);
-
-        eventRepository.save(event);
-    }
-
-    public void cancelApplication(UUID id, String userEmail) {
-        var event = eventRepository.findEventEntitiesById(id)
-                .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
-
-        var user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-
-        if (event.getDeadline().isBefore(LocalDateTime.now())) {
-            throw new BadRequestException("После дедлайна нельзя отменить регистрацию на мероприятие");
-        }
-
-        event.getTeams().removeIf(team -> team.getCaptain().equals(user));
-
-        eventRepository.save(event);
     }
 
     private Sort getSort(SortField sortField, SortDirection sortDirection) {
