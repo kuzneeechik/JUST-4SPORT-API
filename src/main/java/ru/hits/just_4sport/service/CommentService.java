@@ -33,14 +33,17 @@ public class CommentService {
         var event = eventRepository.findEventEntitiesById(eventId)
                 .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
 
-        var parentComment = commentRepository.findCommentEntityById(comment.getParentId())
-                .orElseThrow(() -> new NotFoundException("Родительский комментарий не найден"));
-
         var newComment = new CommentEntity()
                 .setContent(comment.getContent())
                 .setEvent(event)
-                .setAuthor(author)
-                .setParent(parentComment);
+                .setAuthor(author);
+
+        if (comment.getParentId() != null) {
+            var parentComment = commentRepository.findCommentEntityById(comment.getParentId())
+                    .orElseThrow(() -> new NotFoundException("Родительский комментарий не найден"));
+
+            newComment.setParent(parentComment);
+        }
 
         event.getComments().add(newComment);
 
