@@ -17,6 +17,8 @@ public interface CommentMapper {
         return new CommentModel()
                 .setId(comment.getId())
                 .setContent(comment.getContent())
+                .setAuthorName(comment.getAuthor().getName())
+                .setAuthorId(comment.getAuthor().getId())
                 .setParentId(parentId);
     }
 }

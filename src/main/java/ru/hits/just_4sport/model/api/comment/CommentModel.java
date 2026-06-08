@@ -15,5 +15,7 @@ public class CommentModel {
 
     private String authorName;
 
+    private UUID authorId;
+
     private UUID parentId;
 }
