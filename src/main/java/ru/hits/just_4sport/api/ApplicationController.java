@@ -11,7 +11,7 @@ import ru.hits.just_4sport.service.ApplicationService;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/event/application")
+@RequestMapping("/api/event")
 @RequiredArgsConstructor
 public class ApplicationController {
 

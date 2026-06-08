@@ -1,6 +1,7 @@
 package ru.hits.just_4sport.model.mapper;
 
 import org.mapstruct.Mapper;
+import ru.hits.just_4sport.model.api.team.TeamAuthorModel;
 import ru.hits.just_4sport.model.api.team.TeamGameModel;
 import ru.hits.just_4sport.model.api.team.TeamModel;
 import ru.hits.just_4sport.model.api.user.UserModel;
@@ -18,7 +19,27 @@ public interface TeamMapper {
             UserModel captain,
             List<UserModel> members
     ) {
+        if (team == null) {
+            return null;
+        }
+
         return new TeamModel()
+                .setId(team.getId())
+                .setName(team.getName())
+                .setCaptain(captain)
+                .setTeamMembers(members);
+    }
+
+    default TeamAuthorModel toAuthorModel(
+            TeamEntity team,
+            UserModel captain,
+            List<UserModel> members
+    ) {
+        if (team == null) {
+            return null;
+        }
+
+        return new TeamAuthorModel()
                 .setId(team.getId())
                 .setName(team.getName())
                 .setCaptain(captain)
