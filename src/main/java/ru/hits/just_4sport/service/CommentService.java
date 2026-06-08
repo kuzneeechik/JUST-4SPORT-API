@@ -63,7 +63,7 @@ public class CommentService {
         var author = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Автор не найден"));
 
-        if (author.getId().equals(commentEntity.getAuthor().getId())) {
+        if (!author.getId().equals(commentEntity.getAuthor().getId())) {
             throw new BadRequestException("Текущий пользователь не может редактировать этот комментарий");
         }
 
@@ -79,7 +79,7 @@ public class CommentService {
         var author = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Автор не найден"));
 
-        if (author.getId().equals(commentEntity.getAuthor().getId())) {
+        if (!author.getId().equals(commentEntity.getAuthor().getId())) {
             throw new BadRequestException("Текущий пользователь не может редактировать этот комментарий");
         }
 

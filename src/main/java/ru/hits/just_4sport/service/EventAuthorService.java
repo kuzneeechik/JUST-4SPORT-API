@@ -31,7 +31,7 @@ public class EventAuthorService {
         var author = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Автор не найден"));
 
-        if (author.getId().equals(event.getAuthor().getId())) {
+        if (!author.getId().equals(event.getAuthor().getId())) {
             throw new BadRequestException("Пользователь не является автором мероприятия");
         }
 
@@ -57,7 +57,7 @@ public class EventAuthorService {
         var author = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Автор не найден"));
 
-        if (author.getId().equals(event.getAuthor().getId())) {
+        if (!author.getId().equals(event.getAuthor().getId())) {
             throw new BadRequestException("Пользователь не является автором мероприятия");
         }
 
