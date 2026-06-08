@@ -43,6 +43,7 @@ public interface TeamMapper {
                 .setId(team.getId())
                 .setName(team.getName())
                 .setCaptain(captain)
-                .setTeamMembers(members);
+                .setTeamMembers(members)
+                .setContactInformation(team.getContactInformation());
     }
 }

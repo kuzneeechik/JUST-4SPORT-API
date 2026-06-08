@@ -18,4 +18,6 @@ public class TeamAuthorModel {
     private UserModel captain;
 
     private List<UserModel> teamMembers;
+
+    private String contactInformation;
 }
