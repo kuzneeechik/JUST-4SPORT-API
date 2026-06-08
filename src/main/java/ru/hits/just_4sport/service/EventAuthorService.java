@@ -6,7 +6,6 @@ import ru.hits.just_4sport.infrastructure.exception.BadRequestException;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.event.EventEditModel;
 import ru.hits.just_4sport.model.api.team.TeamAuthorModel;
-import ru.hits.just_4sport.model.mapper.EventMapper;
 import ru.hits.just_4sport.model.mapper.TeamMapper;
 import ru.hits.just_4sport.model.mapper.UserMapper;
 import ru.hits.just_4sport.repository.EventRepository;
@@ -24,7 +23,6 @@ public class EventAuthorService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final TeamMapper teamMapper;
-    private final EventMapper eventMapper;
 
     public List<TeamAuthorModel> getParticipants(String email, UUID id) {
         var event = eventRepository.findEventEntitiesById(id)
@@ -33,7 +31,7 @@ public class EventAuthorService {
         var author = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Автор не найден"));
 
-        if (author != event.getAuthor()) {
+        if (author.getId().equals(event.getAuthor().getId())) {
             throw new BadRequestException("Пользователь не является автором мероприятия");
         }
 
@@ -59,12 +57,19 @@ public class EventAuthorService {
         var author = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Автор не найден"));
 
-        if (author != event.getAuthor()) {
+        if (author.getId().equals(event.getAuthor().getId())) {
             throw new BadRequestException("Пользователь не является автором мероприятия");
         }
 
-        var editedEvent = eventMapper.toEntity(eventData);
+        event.setName(eventData.getName())
+                .setDescription(eventData.getDescription())
+                .setDateStart(eventData.getDateStart())
+                .setDateEnd(eventData.getDateEnd())
+                .setPlace(eventData.getPlace())
+                .setCost(eventData.getCost())
+                .setDeadline(eventData.getDeadline())
+                .setTeamsNumber(eventData.getTeamsNumber());
 
-        eventRepository.save(editedEvent);
+        eventRepository.save(event);
     }
 }
