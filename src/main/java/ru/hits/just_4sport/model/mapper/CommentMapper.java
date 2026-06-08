@@ -12,10 +12,11 @@ public interface CommentMapper {
             return null;
         }
 
+        var parentId = comment.getParent() == null ? null : comment.getParent().getId();
+
         return new CommentModel()
                 .setId(comment.getId())
                 .setContent(comment.getContent())
-                .setAuthorName(comment.getAuthor().getName())
-                .setParent(comment.getParent().getId());
+                .setParentId(parentId);
     }
 }
