@@ -68,4 +68,18 @@ public class CommentService {
 
         commentRepository.save(commentEntity);
     }
+
+    public void deleteComment(String email, UUID commentId) {
+        var commentEntity = commentRepository.findCommentEntityById(commentId)
+                .orElseThrow(() -> new NotFoundException("Комментарий не найден"));
+
+        var author = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Автор не найден"));
+
+        if (author != commentEntity.getAuthor()) {
+            throw new BadRequestException("Текущий пользователь не может редактировать этот комментарий");
+        }
+
+        commentRepository.delete(commentEntity);
+    }
 }
