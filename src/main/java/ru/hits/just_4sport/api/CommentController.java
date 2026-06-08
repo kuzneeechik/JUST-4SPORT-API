@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import ru.hits.just_4sport.model.api.IdModel;
 import ru.hits.just_4sport.model.api.comment.CommentCreateModel;
+import ru.hits.just_4sport.model.api.comment.CommentEditModel;
 import ru.hits.just_4sport.service.CommentService;
 
 import java.util.UUID;
@@ -29,5 +30,20 @@ public class CommentController {
                 eventId,
                 comment
         ));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> editComment(
+            @AuthenticationPrincipal UserDetails user,
+            @PathVariable UUID id,
+            @RequestBody CommentEditModel comment
+    ) {
+        commentService.editComment(
+                user.getUsername(),
+                id,
+                comment
+        );
+
+        return ResponseEntity.ok().build();
     }
 }
