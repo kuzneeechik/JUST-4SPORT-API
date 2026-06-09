@@ -8,5 +8,6 @@ import lombok.experimental.Accessors;
 public class TokenModel {
 
     private String accessToken;
+
     private String refreshToken;
 }

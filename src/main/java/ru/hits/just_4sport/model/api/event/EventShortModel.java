@@ -2,7 +2,7 @@ package ru.hits.just_4sport.model.api.event;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import ru.hits.just_4sport.model.domain.PhotoEntity;
+import ru.hits.just_4sport.model.api.PhotoModel;
 import ru.hits.just_4sport.model.enums.EventStatus;
 import ru.hits.just_4sport.model.enums.EventType;
 import ru.hits.just_4sport.model.enums.SkillLevel;
@@ -34,5 +34,5 @@ public class EventShortModel {
 
     private SkillLevel skillLevel;
 
-    private PhotoEntity photo;
+    private PhotoModel photo;
 }
