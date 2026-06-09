@@ -2,7 +2,7 @@ package ru.hits.just_4sport.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.hits.just_4sport.infrastructure.exception.BadRequestException;
+import ru.hits.just_4sport.infrastructure.exception.ForbiddenAccessException;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.event.EventEditModel;
 import ru.hits.just_4sport.model.api.team.TeamAuthorModel;
@@ -33,7 +33,7 @@ public class EventAuthorService {
                 .orElseThrow(() -> new NotFoundException("Автор не найден"));
 
         if (!author.getId().equals(event.getAuthor().getId())) {
-            throw new BadRequestException("Пользователь не является автором мероприятия");
+            throw new ForbiddenAccessException("Пользователь не является автором мероприятия");
         }
 
         var participants = new ArrayList<TeamAuthorModel>();
@@ -59,7 +59,7 @@ public class EventAuthorService {
                 .orElseThrow(() -> new NotFoundException("Автор не найден"));
 
         if (!author.getId().equals(event.getAuthor().getId())) {
-            throw new BadRequestException("Пользователь не является автором мероприятия");
+            throw new ForbiddenAccessException("Пользователь не является автором мероприятия");
         }
 
         event.setName(eventData.getName())
@@ -82,7 +82,7 @@ public class EventAuthorService {
                 .orElseThrow(() -> new NotFoundException("Автор не найден"));
 
         if (!author.getId().equals(event.getAuthor().getId())) {
-            throw new BadRequestException("Пользователь не является автором мероприятия");
+            throw new ForbiddenAccessException("Пользователь не является автором мероприятия");
         }
 
         eventRepository.delete(event);
@@ -96,7 +96,7 @@ public class EventAuthorService {
                 .orElseThrow(() -> new NotFoundException("Автор не найден"));
 
         if (!author.getId().equals(event.getAuthor().getId())) {
-            throw new BadRequestException("Пользователь не является автором мероприятия");
+            throw new ForbiddenAccessException("Пользователь не является автором мероприятия");
         }
 
         event.setEventStatus(EventStatus.CANCELLED);

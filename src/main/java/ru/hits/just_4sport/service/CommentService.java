@@ -2,7 +2,7 @@ package ru.hits.just_4sport.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.hits.just_4sport.infrastructure.exception.BadRequestException;
+import ru.hits.just_4sport.infrastructure.exception.ForbiddenAccessException;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.IdModel;
 import ru.hits.just_4sport.model.api.comment.CommentCreateModel;
@@ -64,7 +64,7 @@ public class CommentService {
                 .orElseThrow(() -> new NotFoundException("Автор не найден"));
 
         if (!author.getId().equals(commentEntity.getAuthor().getId())) {
-            throw new BadRequestException("Текущий пользователь не может редактировать этот комментарий");
+            throw new ForbiddenAccessException("Текущий пользователь не может редактировать этот комментарий");
         }
 
         commentEntity.setContent(comment.getContent());
@@ -80,7 +80,7 @@ public class CommentService {
                 .orElseThrow(() -> new NotFoundException("Автор не найден"));
 
         if (!author.getId().equals(commentEntity.getAuthor().getId())) {
-            throw new BadRequestException("Текущий пользователь не может редактировать этот комментарий");
+            throw new ForbiddenAccessException("Текущий пользователь не может удалить этот комментарий");
         }
 
         commentRepository.delete(commentEntity);

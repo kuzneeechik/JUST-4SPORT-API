@@ -6,6 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.hits.just_4sport.infrastructure.exception.BadRequestException;
+import ru.hits.just_4sport.infrastructure.exception.ForbiddenAccessException;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.ExceptionResponseModel;
 
@@ -36,5 +37,11 @@ public class CustomExceptionHandler {
 
         return new ResponseEntity<>(new ExceptionResponseModel(HttpStatus.BAD_REQUEST.value(), message),
                 HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ExceptionResponseModel> catchForbiddenAccessException(ForbiddenAccessException exception) {
+        return new ResponseEntity<>(new ExceptionResponseModel(HttpStatus.FORBIDDEN.value(), exception.getMessage()),
+                HttpStatus.FORBIDDEN);
     }
 }
