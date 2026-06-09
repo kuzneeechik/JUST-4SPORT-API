@@ -8,6 +8,7 @@ import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.user.UserProfileModel;
 import ru.hits.just_4sport.model.api.user.UserUpdateProfileModel;
 import ru.hits.just_4sport.model.domain.PhotoEntity;
+import ru.hits.just_4sport.model.mapper.EventMapper;
 import ru.hits.just_4sport.model.mapper.PhotoMapper;
 import ru.hits.just_4sport.repository.EventRepository;
 import ru.hits.just_4sport.repository.PhotoRepository;
@@ -26,6 +27,7 @@ public class UserProfileService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PhotoMapper photoMapper;
     private final PhotoService photoService;
+    private final EventMapper eventMapper;
 
     public UserProfileModel getUserProfile(UUID id) {
         var user = userRepository.findById(id)
@@ -36,12 +38,19 @@ public class UserProfileService {
                 .setNickname(user.getNickname())
                 .setEmail(user.getEmail())
                 .setPhoto(photoMapper.toModel(user.getPhoto()))
-                .setFavoriteSports(user.getFavoriteSports())
-                .setAuthorEvents(user.getAuthorEvents());
+                .setFavoriteSports(user.getFavoriteSports());
 
-        var participantEvents = eventsRepository.findEventEntitiesByAnyTeamIn(user.getTeams());
+        var participantEvents = eventsRepository.findEventEntitiesByAnyTeamIn(user.getTeams())
+                .stream()
+                .map(eventMapper::toShortModel)
+                .toList();
+
+        var authorEvents = user.getAuthorEvents().stream()
+                        .map(eventMapper::toShortModel)
+                                .toList();
 
         profile.setParticipantEvents(participantEvents);
+        profile.setAuthorEvents(authorEvents);
 
         return profile;
     }

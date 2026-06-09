@@ -3,7 +3,7 @@ package ru.hits.just_4sport.model.api.user;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import ru.hits.just_4sport.model.api.PhotoModel;
-import ru.hits.just_4sport.model.domain.EventEntity;
+import ru.hits.just_4sport.model.api.event.EventShortModel;
 import ru.hits.just_4sport.model.enums.Sport;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class UserProfileModel {
 
     private List<Sport> favoriteSports;
 
-    private List<EventEntity> authorEvents;
+    private List<EventShortModel> authorEvents;
 
-    private List<EventEntity> participantEvents;
+    private List<EventShortModel> participantEvents;
 }
