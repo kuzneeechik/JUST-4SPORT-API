@@ -29,6 +29,7 @@ public class ApplicationService {
                 .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
 
         if (event.getTeamsNumber() == event.getTeams().size() ||
+                event.getEventStatus() == EventStatus.CANCELLED ||
                 event.getEventStatus() != EventStatus.WILL_BE ||
                 event.getDeadline().isBefore(LocalDateTime.now())) {
             throw new BadRequestException("Набор команд на это мероприятие уже завершён");

@@ -47,4 +47,14 @@ public class EventAuthorController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelEvent(
+            @AuthenticationPrincipal UserDetails user,
+            @PathVariable UUID id
+    ) {
+        eventAuthorService.cancelEvent(user.getUsername(), id);
+
+        return ResponseEntity.ok().build();
+    }
 }

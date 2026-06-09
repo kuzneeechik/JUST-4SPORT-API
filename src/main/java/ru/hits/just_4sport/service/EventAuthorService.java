@@ -6,6 +6,7 @@ import ru.hits.just_4sport.infrastructure.exception.BadRequestException;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.event.EventEditModel;
 import ru.hits.just_4sport.model.api.team.TeamAuthorModel;
+import ru.hits.just_4sport.model.enums.EventStatus;
 import ru.hits.just_4sport.model.mapper.TeamMapper;
 import ru.hits.just_4sport.model.mapper.UserMapper;
 import ru.hits.just_4sport.repository.EventRepository;
@@ -85,5 +86,20 @@ public class EventAuthorService {
         }
 
         eventRepository.delete(event);
+    }
+
+    public void cancelEvent(String email, UUID id) {
+        var event = eventRepository.findEventEntitiesById(id)
+                .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
+
+        var author = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Автор не найден"));
+
+        if (!author.getId().equals(event.getAuthor().getId())) {
+            throw new BadRequestException("Пользователь не является автором мероприятия");
+        }
+
+        event.setEventStatus(EventStatus.CANCELLED);
+        eventRepository.save(event);
     }
 }
