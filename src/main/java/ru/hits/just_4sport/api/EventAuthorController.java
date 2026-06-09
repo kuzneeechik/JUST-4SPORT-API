@@ -37,4 +37,14 @@ public class EventAuthorController {
 
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEvent(
+            @AuthenticationPrincipal UserDetails user,
+            @PathVariable UUID id
+    ) {
+        eventAuthorService.deleteEvent(user.getUsername(), id);
+
+        return ResponseEntity.ok().build();
+    }
 }

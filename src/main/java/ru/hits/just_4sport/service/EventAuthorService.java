@@ -72,4 +72,18 @@ public class EventAuthorService {
 
         eventRepository.save(event);
     }
+
+    public void deleteEvent(String email, UUID id) {
+        var event = eventRepository.findEventEntitiesById(id)
+                .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
+
+        var author = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Автор не найден"));
+
+        if (!author.getId().equals(event.getAuthor().getId())) {
+            throw new BadRequestException("Пользователь не является автором мероприятия");
+        }
+
+        eventRepository.delete(event);
+    }
 }
