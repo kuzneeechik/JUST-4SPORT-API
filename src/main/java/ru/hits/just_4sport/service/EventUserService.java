@@ -13,7 +13,6 @@ import ru.hits.just_4sport.model.api.event.EventCreateModel;
 import ru.hits.just_4sport.model.api.event.EventFilterModel;
 import ru.hits.just_4sport.model.api.event.EventModel;
 import ru.hits.just_4sport.model.api.event.EventShortModel;
-import ru.hits.just_4sport.model.api.team.TeamModel;
 import ru.hits.just_4sport.model.domain.PhotoEntity;
 import ru.hits.just_4sport.model.enums.SortDirection;
 import ru.hits.just_4sport.model.enums.SortField;
@@ -23,8 +22,6 @@ import ru.hits.just_4sport.repository.UserRepository;
 import ru.hits.just_4sport.utils.EventSpecificationUtility;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -84,25 +81,6 @@ public class EventUserService {
                 comments,
                 schedule,
                 teams);
-    }
-
-    public List<TeamModel> getParticipants(UUID id) {
-        var event = eventRepository.findEventEntitiesById(id)
-                .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
-
-        var teams = new ArrayList<TeamModel>();
-
-        for (var team : event.getTeams()) {
-            var members = team.getTeamMembers().stream()
-                    .map(userMapper::toModel)
-                    .toList();
-
-            var captain = userMapper.toModel(team.getCaptain());
-
-            teams.add(teamMapper.toModel(team, captain, members));
-        }
-
-        return teams;
     }
 
     public IdModel createEvent(

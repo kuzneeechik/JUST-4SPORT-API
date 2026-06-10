@@ -17,13 +17,11 @@ import ru.hits.just_4sport.model.api.event.EventCreateModel;
 import ru.hits.just_4sport.model.api.event.EventFilterModel;
 import ru.hits.just_4sport.model.api.event.EventModel;
 import ru.hits.just_4sport.model.api.event.EventShortModel;
-import ru.hits.just_4sport.model.api.team.TeamModel;
 import ru.hits.just_4sport.model.enums.*;
 import ru.hits.just_4sport.service.EventUserService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -94,10 +92,5 @@ public class EventUserController {
             @RequestPart(value = "file", required = false) MultipartFile photo
     ) {
         return ResponseEntity.ok(eventUserService.createEvent(user.getUsername(), event, photo));
-    }
-
-    @GetMapping("/{id}/participants")
-    public ResponseEntity<List<TeamModel>> getParticipants(@PathVariable UUID id) {
-        return ResponseEntity.ok(eventUserService.getParticipants(id));
     }
 }
