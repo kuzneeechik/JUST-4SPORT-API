@@ -20,12 +20,12 @@ public class EventParticipantsController {
     private final EventParticipantsService eventParticipantsService;
 
     @GetMapping("/{eventId}")
-    public ResponseEntity<List<TeamModel>> getParticipants(@PathVariable UUID eventId) {
+    public ResponseEntity<List<TeamModel>> getParticipantsForUser(@PathVariable UUID eventId) {
         return ResponseEntity.ok(eventParticipantsService.getParticipantsForUser(eventId));
     }
 
-    @GetMapping("/{eventId}")
-    public ResponseEntity<List<TeamAuthorModel>> getParticipants(
+    @GetMapping("/{eventId}/author")
+    public ResponseEntity<List<TeamAuthorModel>> getParticipantsForAuthor(
             @AuthenticationPrincipal UserDetails user,
             @PathVariable UUID eventId
     ) {
