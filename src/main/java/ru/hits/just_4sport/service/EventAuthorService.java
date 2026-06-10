@@ -2,6 +2,7 @@ package ru.hits.just_4sport.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.hits.just_4sport.infrastructure.exception.BadRequestException;
 import ru.hits.just_4sport.infrastructure.exception.ForbiddenAccessException;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.event.EventEditModel;
@@ -13,6 +14,7 @@ import ru.hits.just_4sport.model.mapper.UserMapper;
 import ru.hits.just_4sport.repository.EventRepository;
 import ru.hits.just_4sport.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -74,6 +76,11 @@ public class EventAuthorService {
 
     public void finishEvent(String email, UUID id) {
         var event = findEventAndCheckAuthor(email, id);
+
+        if (event.getEventStatus() != EventStatus.UNDERWAY ||
+            event.getDateEnd().isAfter(LocalDateTime.now())) {
+            throw new BadRequestException("Нельзя отметить мероприятие завершённым, если оно не было проведено");
+        }
 
         event.setEventStatus(EventStatus.FINISHED);
         eventRepository.save(event);
