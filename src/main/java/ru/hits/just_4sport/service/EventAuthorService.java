@@ -9,11 +9,13 @@ import ru.hits.just_4sport.model.api.event.EventEditModel;
 import ru.hits.just_4sport.model.api.team.TeamAuthorModel;
 import ru.hits.just_4sport.model.domain.EventEntity;
 import ru.hits.just_4sport.model.enums.EventStatus;
+import ru.hits.just_4sport.model.enums.EventType;
 import ru.hits.just_4sport.model.mapper.TeamMapper;
 import ru.hits.just_4sport.model.mapper.UserMapper;
 import ru.hits.just_4sport.repository.EventRepository;
 import ru.hits.just_4sport.repository.TeamRepository;
 import ru.hits.just_4sport.repository.UserRepository;
+import ru.hits.just_4sport.service.auth.ScheduleService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ public class EventAuthorService {
     private final UserMapper userMapper;
     private final TeamMapper teamMapper;
     private final TeamRepository teamRepository;
+    private final ScheduleService scheduleService;
 
     public void editEvent(String email, UUID id, EventEditModel eventData) {
         var event = findEventAndCheckAuthor(email, id);
@@ -104,6 +107,22 @@ public class EventAuthorService {
         teamRepository.save(team);
 
         teamRepository.delete(team);
+    }
+
+    public void closeRecruitment(String email, UUID id) {
+        var event = findEventAndCheckAuthor(email, id);
+
+        if (event.getEventStatus() != EventStatus.WILL_BE) {
+            throw new BadRequestException("Набор участников уже закрыт");
+        }
+
+        event.setEventStatus(EventStatus.UNDERWAY);
+
+        if (event.getEventType() == EventType.TOURNAMENT) {
+            event.setSchedule(scheduleService.generateSchedule(event));
+        }
+
+        eventRepository.save(event);
     }
 
     private EventEntity findEventAndCheckAuthor(String email, UUID id) {

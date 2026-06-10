@@ -17,6 +17,6 @@ public class ScheduleEntity {
     @Id
     private UUID id = UUID.randomUUID();
 
-    @OneToMany(mappedBy = "schedule", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GameEntity> games = new ArrayList<>();
 }

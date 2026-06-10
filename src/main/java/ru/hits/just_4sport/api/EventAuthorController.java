@@ -78,4 +78,14 @@ public class EventAuthorController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/{id}/participants/close")
+    public ResponseEntity<Void> closeRecruitment(
+            @AuthenticationPrincipal UserDetails user,
+            @PathVariable UUID id
+    ) {
+        eventAuthorService.closeRecruitment(user.getUsername(), id);
+
+        return ResponseEntity.ok().build();
+    }
 }
