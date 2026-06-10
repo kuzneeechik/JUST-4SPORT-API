@@ -12,6 +12,7 @@ import ru.hits.just_4sport.model.enums.EventStatus;
 import ru.hits.just_4sport.model.mapper.TeamMapper;
 import ru.hits.just_4sport.model.mapper.UserMapper;
 import ru.hits.just_4sport.repository.EventRepository;
+import ru.hits.just_4sport.repository.TeamRepository;
 import ru.hits.just_4sport.repository.UserRepository;
 
 import java.time.LocalDateTime;
@@ -27,24 +28,7 @@ public class EventAuthorService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final TeamMapper teamMapper;
-
-    public List<TeamAuthorModel> getParticipants(String email, UUID id) {
-        var event = findEventAndCheckAuthor(email, id);
-
-        var participants = new ArrayList<TeamAuthorModel>();
-
-        for (var team : event.getTeams()) {
-            var captain = userMapper.toModel(team.getCaptain());
-
-            var teamMembers = team.getTeamMembers().stream()
-                    .map(userMapper::toModel)
-                    .toList();
-
-            participants.add(teamMapper.toAuthorModel(team, captain, teamMembers));
-        }
-
-        return participants;
-    }
+    private final TeamRepository teamRepository;
 
     public void editEvent(String email, UUID id, EventEditModel eventData) {
         var event = findEventAndCheckAuthor(email, id);
@@ -84,6 +68,42 @@ public class EventAuthorService {
 
         event.setEventStatus(EventStatus.FINISHED);
         eventRepository.save(event);
+    }
+
+    public List<TeamAuthorModel> getParticipants(String email, UUID id) {
+        var event = findEventAndCheckAuthor(email, id);
+
+        var participants = new ArrayList<TeamAuthorModel>();
+
+        for (var team : event.getTeams()) {
+            var captain = userMapper.toModel(team.getCaptain());
+
+            var teamMembers = team.getTeamMembers().stream()
+                    .map(userMapper::toModel)
+                    .toList();
+
+            participants.add(teamMapper.toAuthorModel(team, captain, teamMembers));
+        }
+
+        return participants;
+    }
+
+    public void deleteParticipant(String email, UUID eventId, UUID teamId) {
+        var event = findEventAndCheckAuthor(email, eventId);
+
+        var team = teamRepository.findById(teamId)
+                        .orElseThrow(() -> new NotFoundException("Команда не найдена"));
+
+        if (!team.getEvent().getId().equals(event.getId())) {
+            throw new ForbiddenAccessException("Невозможно удалить команду, не относящуюся к этому мероприятию");
+        }
+
+        event.getTeams().removeIf(currentTeam -> currentTeam.getId().equals(team.getId()));
+
+        team.getTeamMembers().clear();
+        teamRepository.save(team);
+
+        teamRepository.delete(team);
     }
 
     private EventEntity findEventAndCheckAuthor(String email, UUID id) {

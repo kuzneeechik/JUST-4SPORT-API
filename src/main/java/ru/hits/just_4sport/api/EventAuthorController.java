@@ -19,14 +19,6 @@ public class EventAuthorController {
 
     private final EventAuthorService eventAuthorService;
 
-    @GetMapping("/{id}/participants")
-    public ResponseEntity<List<TeamAuthorModel>> getParticipants(
-            @AuthenticationPrincipal UserDetails user,
-            @PathVariable UUID id
-    ) {
-        return ResponseEntity.ok(eventAuthorService.getParticipants(user.getUsername(), id));
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<Void> editEvent(
             @AuthenticationPrincipal UserDetails user,
@@ -64,6 +56,25 @@ public class EventAuthorController {
             @PathVariable UUID id
     ) {
         eventAuthorService.finishEvent(user.getUsername(), id);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/participants")
+    public ResponseEntity<List<TeamAuthorModel>> getParticipants(
+            @AuthenticationPrincipal UserDetails user,
+            @PathVariable UUID id
+    ) {
+        return ResponseEntity.ok(eventAuthorService.getParticipants(user.getUsername(), id));
+    }
+
+    @DeleteMapping("/{eventId}/participants/{teamId}")
+    public ResponseEntity<Void> deleteParticipant(
+            @AuthenticationPrincipal UserDetails user,
+            @PathVariable UUID eventId,
+            @PathVariable UUID teamId
+    ) {
+        eventAuthorService.deleteParticipant(user.getUsername(), eventId, teamId);
 
         return ResponseEntity.ok().build();
     }
