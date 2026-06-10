@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers(
-                                "api/photo/{photoPath}",
+                                "/api/photo/{photoPath}",
                                 "/api/events",
                                 "/api/events/{id}",
                                 "/api/auth/login",
