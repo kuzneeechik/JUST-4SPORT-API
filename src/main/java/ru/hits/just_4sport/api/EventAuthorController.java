@@ -57,4 +57,14 @@ public class EventAuthorController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/{id}/finish")
+    public ResponseEntity<Void> finishEvent(
+            @AuthenticationPrincipal UserDetails user,
+            @PathVariable UUID id
+    ) {
+        eventAuthorService.finishEvent(user.getUsername(), id);
+
+        return ResponseEntity.ok().build();
+    }
 }

@@ -6,6 +6,7 @@ import ru.hits.just_4sport.infrastructure.exception.ForbiddenAccessException;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.event.EventEditModel;
 import ru.hits.just_4sport.model.api.team.TeamAuthorModel;
+import ru.hits.just_4sport.model.domain.EventEntity;
 import ru.hits.just_4sport.model.enums.EventStatus;
 import ru.hits.just_4sport.model.mapper.TeamMapper;
 import ru.hits.just_4sport.model.mapper.UserMapper;
@@ -26,15 +27,7 @@ public class EventAuthorService {
     private final TeamMapper teamMapper;
 
     public List<TeamAuthorModel> getParticipants(String email, UUID id) {
-        var event = eventRepository.findEventEntitiesById(id)
-                .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
-
-        var author = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("Автор не найден"));
-
-        if (!author.getId().equals(event.getAuthor().getId())) {
-            throw new ForbiddenAccessException("Пользователь не является автором мероприятия");
-        }
+        var event = findEventAndCheckAuthor(email, id);
 
         var participants = new ArrayList<TeamAuthorModel>();
 
@@ -52,15 +45,7 @@ public class EventAuthorService {
     }
 
     public void editEvent(String email, UUID id, EventEditModel eventData) {
-        var event = eventRepository.findEventEntitiesById(id)
-                .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
-
-        var author = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("Автор не найден"));
-
-        if (!author.getId().equals(event.getAuthor().getId())) {
-            throw new ForbiddenAccessException("Пользователь не является автором мероприятия");
-        }
+        var event = findEventAndCheckAuthor(email, id);
 
         event.setName(eventData.getName())
                 .setDescription(eventData.getDescription())
@@ -75,20 +60,26 @@ public class EventAuthorService {
     }
 
     public void deleteEvent(String email, UUID id) {
-        var event = eventRepository.findEventEntitiesById(id)
-                .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
-
-        var author = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("Автор не найден"));
-
-        if (!author.getId().equals(event.getAuthor().getId())) {
-            throw new ForbiddenAccessException("Пользователь не является автором мероприятия");
-        }
+        var event = findEventAndCheckAuthor(email, id);
 
         eventRepository.delete(event);
     }
 
     public void cancelEvent(String email, UUID id) {
+        var event = findEventAndCheckAuthor(email, id);
+
+        event.setEventStatus(EventStatus.CANCELLED);
+        eventRepository.save(event);
+    }
+
+    public void finishEvent(String email, UUID id) {
+        var event = findEventAndCheckAuthor(email, id);
+
+        event.setEventStatus(EventStatus.FINISHED);
+        eventRepository.save(event);
+    }
+
+    private EventEntity findEventAndCheckAuthor(String email, UUID id) {
         var event = eventRepository.findEventEntitiesById(id)
                 .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
 
@@ -99,7 +90,6 @@ public class EventAuthorService {
             throw new ForbiddenAccessException("Пользователь не является автором мероприятия");
         }
 
-        event.setEventStatus(EventStatus.CANCELLED);
-        eventRepository.save(event);
+        return event;
     }
 }

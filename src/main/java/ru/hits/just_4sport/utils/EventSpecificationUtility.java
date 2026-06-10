@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import org.springframework.data.jpa.domain.Specification;
 import ru.hits.just_4sport.model.api.event.EventFilterModel;
 import ru.hits.just_4sport.model.domain.EventEntity;
+import ru.hits.just_4sport.model.enums.EventStatus;
 
 import java.util.ArrayList;
 
@@ -20,6 +21,9 @@ public class EventSpecificationUtility {
         if (filter.getEventStatus() != null) {
             specificationPredicates.add((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("eventStatus"), filter.getEventStatus()));
+        } else {
+            specificationPredicates.add((root, query, criteriaBuilder) ->
+                    root.get("eventStatus").in(EventStatus.FINISHED, EventStatus.CANCELLED).not());
         }
 
         if (filter.getName() != null) {
