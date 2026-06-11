@@ -2,7 +2,7 @@ package ru.hits.just_4sport.model.mapper;
 
 import org.mapstruct.Mapper;
 import ru.hits.just_4sport.model.api.PhotoModel;
-import ru.hits.just_4sport.model.api.ScheduleModel;
+import ru.hits.just_4sport.model.api.schedule.ScheduleModel;
 import ru.hits.just_4sport.model.api.comment.CommentModel;
 import ru.hits.just_4sport.model.api.event.EventCreateModel;
 import ru.hits.just_4sport.model.api.event.EventModel;

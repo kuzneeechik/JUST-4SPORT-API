@@ -7,14 +7,12 @@ import ru.hits.just_4sport.infrastructure.exception.ForbiddenAccessException;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.team.TeamAuthorModel;
 import ru.hits.just_4sport.model.api.team.TeamModel;
-import ru.hits.just_4sport.model.domain.EventEntity;
 import ru.hits.just_4sport.model.enums.EventStatus;
 import ru.hits.just_4sport.model.enums.EventType;
 import ru.hits.just_4sport.model.mapper.TeamMapper;
 import ru.hits.just_4sport.model.mapper.UserMapper;
 import ru.hits.just_4sport.repository.EventRepository;
 import ru.hits.just_4sport.repository.TeamRepository;
-import ru.hits.just_4sport.repository.UserRepository;
 import ru.hits.just_4sport.service.auth.ScheduleService;
 
 import java.util.ArrayList;
@@ -27,8 +25,8 @@ public class EventParticipantsService {
 
     private final EventRepository eventRepository;
     private final TeamRepository teamRepository;
-    private final UserRepository userRepository;
     private final ScheduleService scheduleService;
+    private final EventAuthorService eventAuthorService;
     private final UserMapper userMapper;
     private final TeamMapper teamMapper;
 
@@ -52,7 +50,7 @@ public class EventParticipantsService {
     }
 
     public List<TeamAuthorModel> getParticipantsForAuthor(String email, UUID id) {
-        var event = findEventAndCheckAuthor(email, id);
+        var event = eventAuthorService.findEventAndCheckAuthor(email, id);
 
         var participants = new ArrayList<TeamAuthorModel>();
 
@@ -70,7 +68,7 @@ public class EventParticipantsService {
     }
 
     public void deleteParticipant(String email, UUID eventId, UUID teamId) {
-        var event = findEventAndCheckAuthor(email, eventId);
+        var event = eventAuthorService.findEventAndCheckAuthor(email, eventId);
 
         var team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new NotFoundException("Команда не найдена"));
@@ -88,7 +86,7 @@ public class EventParticipantsService {
     }
 
     public void closeRecruitment(String email, UUID id) {
-        var event = findEventAndCheckAuthor(email, id);
+        var event = eventAuthorService.findEventAndCheckAuthor(email, id);
 
         if (event.getEventStatus() != EventStatus.WILL_BE) {
             throw new BadRequestException("Набор участников уже закрыт");
@@ -101,19 +99,5 @@ public class EventParticipantsService {
         }
 
         eventRepository.save(event);
-    }
-
-    private EventEntity findEventAndCheckAuthor(String email, UUID id) {
-        var event = eventRepository.findEventEntitiesById(id)
-                .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
-
-        var author = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("Автор не найден"));
-
-        if (!author.getId().equals(event.getAuthor().getId())) {
-            throw new ForbiddenAccessException("Пользователь не является автором мероприятия");
-        }
-
-        return event;
     }
 }

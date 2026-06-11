@@ -63,7 +63,7 @@ public class EventEntity {
     @JoinColumn(name = "photo_id")
     private PhotoEntity photo;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "schedule_id")
     private ScheduleEntity schedule;
 

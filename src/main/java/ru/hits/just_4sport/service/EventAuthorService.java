@@ -6,12 +6,17 @@ import ru.hits.just_4sport.infrastructure.exception.BadRequestException;
 import ru.hits.just_4sport.infrastructure.exception.ForbiddenAccessException;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.event.EventEditModel;
+import ru.hits.just_4sport.model.api.schedule.ScheduleEditModel;
 import ru.hits.just_4sport.model.domain.EventEntity;
+import ru.hits.just_4sport.model.domain.GameEntity;
+import ru.hits.just_4sport.model.domain.ScheduleEntity;
 import ru.hits.just_4sport.model.enums.EventStatus;
 import ru.hits.just_4sport.repository.EventRepository;
+import ru.hits.just_4sport.repository.TeamRepository;
 import ru.hits.just_4sport.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
@@ -20,6 +25,7 @@ public class EventAuthorService {
 
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final TeamRepository teamRepository;
 
     public void editEvent(String email, UUID id, EventEditModel eventData) {
         var event = findEventAndCheckAuthor(email, id);
@@ -61,9 +67,20 @@ public class EventAuthorService {
         eventRepository.save(event);
     }
 
+    public void editEventSchedule(String email, UUID id, ScheduleEditModel scheduleData) {
+        var event = findEventAndCheckAuthor(email, id);
 
+        var schedule = new ScheduleEntity();
 
-    private EventEntity findEventAndCheckAuthor(String email, UUID id) {
+        var games = buildListOfGames(scheduleData, event, schedule);
+
+        schedule.getGames().addAll(games);
+
+        event.setSchedule(schedule);
+        eventRepository.save(event);
+    }
+
+    public EventEntity findEventAndCheckAuthor(String email, UUID id) {
         var event = eventRepository.findEventEntitiesById(id)
                 .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
 
@@ -75,5 +92,44 @@ public class EventAuthorService {
         }
 
         return event;
+    }
+
+    private ArrayList<GameEntity> buildListOfGames(
+            ScheduleEditModel scheduleData,
+            EventEntity event,
+            ScheduleEntity schedule
+    ) {
+        var games = new ArrayList<GameEntity>();
+
+        for (var game : scheduleData.getGames()) {
+            var firstParticipant = teamRepository.findById(game.getFirstParticipantId())
+                    .orElseThrow(() -> new NotFoundException("Команда не найдена"));
+
+            var secondParticipant = teamRepository.findById(game.getSecondParticipantId())
+                    .orElseThrow(() -> new NotFoundException("Команда не найдена"));
+
+            if (!firstParticipant.getEvent().getId().equals(event.getId())
+                    || !secondParticipant.getEvent().getId().equals(event.getId())) {
+                throw new BadRequestException("Команды должны принадлежать этому мероприятию");
+            }
+
+            if (firstParticipant.getId().equals(secondParticipant.getId())) {
+                throw new BadRequestException("Команда не может играть сама с собой");
+            }
+
+            if (game.getDate().isBefore(event.getDateStart()) || game.getDate().isAfter(event.getDateEnd())) {
+                throw new BadRequestException("Игра должна проходить в рамках дат мероприятия");
+            }
+
+            var gameEntity = new GameEntity()
+                    .setSchedule(schedule)
+                    .setDate(game.getDate())
+                    .setFirstParticipant(firstParticipant)
+                    .setSecondParticipant(secondParticipant);
+
+            games.add(gameEntity);
+        }
+
+        return games;
     }
 }
