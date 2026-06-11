@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.hits.just_4sport.infrastructure.exception.BadRequestException;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.FileModel;
+import ru.hits.just_4sport.model.domain.PhotoEntity;
 import ru.hits.just_4sport.properties.UploadProperties;
 
 import java.io.IOException;
@@ -94,5 +95,19 @@ public class PhotoService {
         }
 
         return fileName.substring(fileName.lastIndexOf("."));
+    }
+
+    public PhotoEntity buildPhotoEntity(MultipartFile photo, PhotoEntity oldPhoto) {
+        String photoName = saveImage(photo);
+
+        var photoEntity = new PhotoEntity()
+                .setTitle(photo.getOriginalFilename())
+                .setPath(photoName);
+
+        if (oldPhoto != null) {
+            deleteImage(oldPhoto.getPath());
+        }
+
+        return photoEntity;
     }
 }

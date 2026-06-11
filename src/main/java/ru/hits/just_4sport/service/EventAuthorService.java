@@ -2,6 +2,7 @@ package ru.hits.just_4sport.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import ru.hits.just_4sport.infrastructure.exception.BadRequestException;
 import ru.hits.just_4sport.infrastructure.exception.ForbiddenAccessException;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
@@ -29,6 +30,7 @@ public class EventAuthorService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
+    private final PhotoService photoService;
 
     public void editEvent(String email, UUID id, EventEditModel eventData) {
         var event = findEventAndCheckAuthor(email, id);
@@ -113,6 +115,19 @@ public class EventAuthorService {
             game.setResult(result.getResult());
         }
 
+        eventRepository.save(event);
+    }
+
+    public void setEventPhoto(String email, UUID id, MultipartFile photo) {
+        var event = findEventAndCheckAuthor(email, id);
+
+        photoService.validateImage(photo);
+
+        var oldPhoto = event.getPhoto();
+
+        var photoEntity = photoService.buildPhotoEntity(photo, oldPhoto);
+
+        event.setPhoto(photoEntity);
         eventRepository.save(event);
     }
 

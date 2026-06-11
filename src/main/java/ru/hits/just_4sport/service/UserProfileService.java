@@ -7,7 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.user.UserProfileModel;
 import ru.hits.just_4sport.model.api.user.UserUpdateProfileModel;
-import ru.hits.just_4sport.model.domain.PhotoEntity;
 import ru.hits.just_4sport.model.mapper.EventMapper;
 import ru.hits.just_4sport.model.mapper.PhotoMapper;
 import ru.hits.just_4sport.repository.EventRepository;
@@ -87,17 +86,9 @@ public class UserProfileService {
 
         photoService.validateImage(photo);
 
-        String photoName = photoService.saveImage(photo);
-
-        var photoEntity = new PhotoEntity()
-                .setTitle(photo.getOriginalFilename())
-                .setPath(photoName);
-
         var oldPhoto = user.getPhoto();
 
-        if (oldPhoto != null) {
-            photoService.deleteImage(oldPhoto.getPath());
-        }
+        var photoEntity = photoService.buildPhotoEntity(photo, oldPhoto);
 
         user.setPhoto(photoEntity);
         userRepository.save(user);

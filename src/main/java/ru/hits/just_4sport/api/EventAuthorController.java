@@ -1,10 +1,12 @@
 package ru.hits.just_4sport.api;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ru.hits.just_4sport.model.api.event.EventEditModel;
 import ru.hits.just_4sport.model.api.game.GameEditResultModel;
 import ru.hits.just_4sport.model.api.schedule.ScheduleEditModel;
@@ -79,6 +81,20 @@ public class EventAuthorController {
             @RequestBody List<GameEditResultModel> results
     ) {
         eventAuthorService.editTournamentTable(user.getUsername(), id, results);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(
+            value = "/{id}/photo",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<Void> setEventPhoto(
+            @AuthenticationPrincipal UserDetails user,
+            @PathVariable UUID id,
+            @RequestPart("file") MultipartFile photo
+    ) {
+        eventAuthorService.setEventPhoto(user.getUsername(), id, photo);
 
         return ResponseEntity.ok().build();
     }
