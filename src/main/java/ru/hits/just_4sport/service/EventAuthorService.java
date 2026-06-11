@@ -15,6 +15,7 @@ import ru.hits.just_4sport.model.domain.ScheduleEntity;
 import ru.hits.just_4sport.model.enums.EventStatus;
 import ru.hits.just_4sport.model.enums.EventType;
 import ru.hits.just_4sport.repository.EventRepository;
+import ru.hits.just_4sport.repository.PhotoRepository;
 import ru.hits.just_4sport.repository.TeamRepository;
 import ru.hits.just_4sport.repository.UserRepository;
 
@@ -31,6 +32,7 @@ public class EventAuthorService {
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
     private final PhotoService photoService;
+    private final PhotoRepository photoRepository;
 
     public void editEvent(String email, UUID id, EventEditModel eventData) {
         var event = findEventAndCheckAuthor(email, id);
@@ -128,6 +130,23 @@ public class EventAuthorService {
         var photoEntity = photoService.buildPhotoEntity(photo, oldPhoto);
 
         event.setPhoto(photoEntity);
+        eventRepository.save(event);
+    }
+
+    public void deleteEventPhoto(String email, UUID id) {
+        var event = findEventAndCheckAuthor(email, id);
+
+        var photo = event.getPhoto();
+
+        if (photo ==  null) {
+            return;
+        }
+
+        photoService.deleteImage(photo.getPath());
+
+        photoRepository.delete(photo);
+
+        event.setPhoto(null);
         eventRepository.save(event);
     }
 

@@ -98,4 +98,14 @@ public class EventAuthorController {
 
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{id}/photo")
+    public ResponseEntity<Void> deleteEventPhoto(
+            @AuthenticationPrincipal UserDetails user,
+            @PathVariable UUID id
+    ) {
+        eventAuthorService.deleteEventPhoto(user.getUsername(), id);
+
+        return ResponseEntity.ok().build();
+    }
 }
