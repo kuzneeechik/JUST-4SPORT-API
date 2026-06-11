@@ -6,9 +6,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import ru.hits.just_4sport.model.api.event.EventEditModel;
+import ru.hits.just_4sport.model.api.game.GameEditResultModel;
 import ru.hits.just_4sport.model.api.schedule.ScheduleEditModel;
 import ru.hits.just_4sport.service.EventAuthorService;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -66,6 +68,17 @@ public class EventAuthorController {
             @RequestBody ScheduleEditModel scheduleData
     ) {
         eventAuthorService.editEventSchedule(user.getUsername(), id, scheduleData);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/table")
+    public ResponseEntity<Void> editTournamentTable(
+            @AuthenticationPrincipal UserDetails user,
+            @PathVariable UUID id,
+            @RequestBody List<GameEditResultModel> results
+    ) {
+        eventAuthorService.editTournamentTable(user.getUsername(), id, results);
 
         return ResponseEntity.ok().build();
     }

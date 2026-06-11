@@ -48,7 +48,7 @@ public class UserProfileController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping(
+    @PostMapping(
             value = "/photo",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )

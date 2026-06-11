@@ -6,17 +6,20 @@ import ru.hits.just_4sport.infrastructure.exception.BadRequestException;
 import ru.hits.just_4sport.infrastructure.exception.ForbiddenAccessException;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.event.EventEditModel;
+import ru.hits.just_4sport.model.api.game.GameEditResultModel;
 import ru.hits.just_4sport.model.api.schedule.ScheduleEditModel;
 import ru.hits.just_4sport.model.domain.EventEntity;
 import ru.hits.just_4sport.model.domain.GameEntity;
 import ru.hits.just_4sport.model.domain.ScheduleEntity;
 import ru.hits.just_4sport.model.enums.EventStatus;
+import ru.hits.just_4sport.model.enums.EventType;
 import ru.hits.just_4sport.repository.EventRepository;
 import ru.hits.just_4sport.repository.TeamRepository;
 import ru.hits.just_4sport.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -70,6 +73,10 @@ public class EventAuthorService {
     public void editEventSchedule(String email, UUID id, ScheduleEditModel scheduleData) {
         var event = findEventAndCheckAuthor(email, id);
 
+        if (event.getEventType() != EventType.TOURNAMENT) {
+            throw new BadRequestException("Редактировать расписание можно только у турнира");
+        }
+
         var schedule = new ScheduleEntity();
 
         var games = buildListOfGames(scheduleData, event, schedule);
@@ -77,6 +84,35 @@ public class EventAuthorService {
         schedule.getGames().addAll(games);
 
         event.setSchedule(schedule);
+        eventRepository.save(event);
+    }
+
+    public void editTournamentTable(String email, UUID id, List<GameEditResultModel> results) {
+        var event = findEventAndCheckAuthor(email, id);
+
+        if (event.getEventType() != EventType.TOURNAMENT) {
+            throw new BadRequestException("Редактировать турнирную таблицу можно только у турнира");
+        }
+
+        if (event.getSchedule() == null) {
+            throw new BadRequestException("У турнира еще нет расписания");
+        }
+
+        if (results == null || results.isEmpty()) {
+            throw new BadRequestException("Необходимо передать результаты игр");
+        }
+
+        var games = event.getSchedule().getGames();
+
+        for (var result : results) {
+            var game = games.stream()
+                    .filter(g -> g.getId().equals(result.getId()))
+                    .findFirst()
+                    .orElseThrow(() -> new NotFoundException("Игра не найдена"));
+
+            game.setResult(result.getResult());
+        }
+
         eventRepository.save(event);
     }
 
