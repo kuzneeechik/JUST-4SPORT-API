@@ -82,8 +82,15 @@ public class ApplicationService {
             throw new BadRequestException("После дедлайна нельзя отменить регистрацию на мероприятие");
         }
 
-        event.getTeams().removeIf(team -> team.getCaptain().equals(user));
+        var team = event.getTeams().stream()
+                .filter(currentTeam -> currentTeam.getCaptain().getId().equals(user.getId()))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Заявка команды на мероприятие не найдена"));
 
-        eventRepository.save(event);
+        event.getTeams().remove(team);
+
+        team.getTeamMembers().clear();
+        teamRepository.save(team);
+        teamRepository.delete(team);
     }
 }
