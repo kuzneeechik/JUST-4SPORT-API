@@ -1,7 +1,9 @@
 package ru.hits.just_4sport.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hits.just_4sport.infrastructure.exception.BadRequestException;
 import ru.hits.just_4sport.infrastructure.exception.ForbiddenAccessException;
@@ -18,6 +20,7 @@ import ru.hits.just_4sport.repository.EventRepository;
 import ru.hits.just_4sport.repository.PhotoRepository;
 import ru.hits.just_4sport.repository.TeamRepository;
 import ru.hits.just_4sport.repository.UserRepository;
+import ru.hits.just_4sport.service.notification.event.EventCancelledEvent;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,6 +36,7 @@ public class EventAuthorService {
     private final TeamRepository teamRepository;
     private final PhotoService photoService;
     private final PhotoRepository photoRepository;
+    private final ApplicationEventPublisher publisher;
 
     public void editEvent(String email, UUID id, EventEditModel eventData) {
         var event = findEventAndCheckAuthor(email, id);
@@ -55,11 +59,14 @@ public class EventAuthorService {
         eventRepository.delete(event);
     }
 
+    @Transactional
     public void cancelEvent(String email, UUID id) {
         var event = findEventAndCheckAuthor(email, id);
 
         event.setEventStatus(EventStatus.CANCELLED);
         eventRepository.save(event);
+
+        publisher.publishEvent(new EventCancelledEvent(id));
     }
 
     public void finishEvent(String email, UUID id) {
