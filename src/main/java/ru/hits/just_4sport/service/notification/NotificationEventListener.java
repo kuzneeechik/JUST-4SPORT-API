@@ -2,7 +2,9 @@ package ru.hits.just_4sport.service.notification;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import ru.hits.just_4sport.repository.EventRepository;
@@ -18,6 +20,8 @@ public class NotificationEventListener {
     private final EventRepository eventRepository;
     private final EmailService emailService;
 
+    @Async
+    @Transactional(readOnly = true)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleEventCancelled(EventCancelledEvent event) {
         var eventEntity = eventRepository.findEventEntitiesById(event.eventId())

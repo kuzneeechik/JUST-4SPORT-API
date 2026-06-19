@@ -3,10 +3,12 @@ package ru.hits.just_4sport;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.scheduling.annotation.EnableAsync;
 import ru.hits.just_4sport.properties.JwtProperties;
 import ru.hits.just_4sport.properties.MailProperties;
 import ru.hits.just_4sport.properties.UploadProperties;
 
+@EnableAsync
 @SpringBootApplication
 @EnableConfigurationProperties({
 		JwtProperties.class,
