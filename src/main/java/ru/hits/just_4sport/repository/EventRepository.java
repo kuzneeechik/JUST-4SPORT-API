@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import ru.hits.just_4sport.model.domain.EventEntity;
 import ru.hits.just_4sport.model.domain.TeamEntity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,4 +23,6 @@ public interface EventRepository extends JpaRepository<EventEntity, UUID>,
         where t in :teams
     """)
     List<EventEntity> findEventEntitiesByAnyTeamIn(@Param("teams") List<TeamEntity> teams);
+
+    List<EventEntity> findAllByDateStartBetween(LocalDateTime dateStartAfter, LocalDateTime dateStartBefore);
 }
