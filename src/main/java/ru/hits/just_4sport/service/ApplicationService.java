@@ -1,7 +1,9 @@
 package ru.hits.just_4sport.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.hits.just_4sport.infrastructure.exception.BadRequestException;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.team.TeamApplicationModel;
@@ -11,6 +13,7 @@ import ru.hits.just_4sport.model.enums.EventStatus;
 import ru.hits.just_4sport.repository.EventRepository;
 import ru.hits.just_4sport.repository.TeamRepository;
 import ru.hits.just_4sport.repository.UserRepository;
+import ru.hits.just_4sport.service.notification.event.NewApplicationEvent;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,7 +26,9 @@ public class ApplicationService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
+    private final ApplicationEventPublisher publisher;
 
+    @Transactional
     public void sendApplication(UUID id, TeamApplicationModel teamApplication) {
         var event = eventRepository.findEventEntitiesById(id)
                 .orElseThrow(() -> new NotFoundException("Мероприятие не найдено"));
@@ -69,6 +74,8 @@ public class ApplicationService {
         event.getTeams().add(team);
 
         eventRepository.save(event);
+
+        publisher.publishEvent(new NewApplicationEvent(team.getId(), event.getId()));
     }
 
     public void cancelApplication(UUID id, String userEmail) {

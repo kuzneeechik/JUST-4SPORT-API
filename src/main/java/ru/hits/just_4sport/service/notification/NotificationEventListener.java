@@ -10,7 +10,9 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import ru.hits.just_4sport.repository.CommentRepository;
 import ru.hits.just_4sport.repository.EventRepository;
+import ru.hits.just_4sport.repository.TeamRepository;
 import ru.hits.just_4sport.service.notification.event.EventCancelledEvent;
+import ru.hits.just_4sport.service.notification.event.NewApplicationEvent;
 import ru.hits.just_4sport.service.notification.event.NewCommentEvent;
 
 import java.util.HashSet;
@@ -23,6 +25,7 @@ public class NotificationEventListener {
     private final EventRepository eventRepository;
     private final EmailService emailService;
     private final CommentRepository commentRepository;
+    private final TeamRepository teamRepository;
 
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
@@ -92,6 +95,38 @@ public class NotificationEventListener {
         }
     }
 
+    @Async
+    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleEventNewApplication(NewApplicationEvent event) {
+        var eventEntity = eventRepository.findEventEntitiesById(event.eventId())
+                .orElse(null);
+
+        var teamEntity = teamRepository.findById(event.teamId())
+                .orElse(null);
+
+        if (eventEntity == null || teamEntity == null) {
+            log.warn("No team with id {} found", event.teamId());
+            return;
+        }
+
+        var eventAuthorEmail = eventEntity.getAuthor().getEmail();
+
+        try {
+            emailService.sendEmail(
+                    eventAuthorEmail,
+                    "Новая регистрация на мероприятие",
+                    buildApplicationCreatedText(
+                            eventEntity.getName(),
+                            teamEntity.getCaptain().getNickname(),
+                            teamEntity.getName(),
+                            teamEntity.getContactInformation())
+            );
+        } catch (Exception exception) {
+            log.error("Failed to send new application email to {}", eventAuthorEmail, exception);
+        }
+    }
+
     private String buildEventCancelledText(String eventName) {
         return """
                 Добрый день!
@@ -108,7 +143,8 @@ public class NotificationEventListener {
     private String buildNewCommentText(
             String eventName,
             String commentAuthorNickname,
-            String commentContent) {
+            String commentContent
+    ) {
         return """
                 У Вас новый комментарий под событием "%s":
                 
@@ -118,5 +154,25 @@ public class NotificationEventListener {
                 С уважением,
                 команда JUST4SPORT
                 """.formatted(eventName, commentAuthorNickname, commentContent);
+    }
+
+    private String buildApplicationCreatedText(
+            String eventName,
+            String teamCaptainNickname,
+            String teamName,
+            String teamContactInfo
+    ) {
+        return """
+                У Вас новая регистрация на мероприятие "%s"!
+                
+                %s только что зарегистрировал свою команду "%s"!
+                Контактная информация: %s
+                
+                С уважением,
+                команда JUST4SPORT
+                """.formatted(eventName,
+                        teamCaptainNickname,
+                        teamName,
+                        teamContactInfo);
     }
 }
