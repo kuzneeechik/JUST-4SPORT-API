@@ -21,7 +21,7 @@ public class EventReminderScheduler {
     private final EventRepository eventRepository;
     private final EmailService emailService;
 
-    @Scheduled(cron = "0 0 17 30 * *", zone = "Asia/Novosibirsk")
+    @Scheduled(cron = "0 45 17 * * *", zone = "Asia/Novosibirsk")
     @Transactional(readOnly = true)
     public void sendTomorrowEventReminders() {
         var tomorrow = LocalDate.now().plusDays(1);
