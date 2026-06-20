@@ -1,7 +1,9 @@
 package ru.hits.just_4sport.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.hits.just_4sport.infrastructure.exception.ForbiddenAccessException;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.IdModel;
@@ -11,6 +13,7 @@ import ru.hits.just_4sport.model.domain.CommentEntity;
 import ru.hits.just_4sport.repository.CommentRepository;
 import ru.hits.just_4sport.repository.EventRepository;
 import ru.hits.just_4sport.repository.UserRepository;
+import ru.hits.just_4sport.service.notification.event.NewCommentEvent;
 
 import java.util.UUID;
 
@@ -21,7 +24,9 @@ public class CommentService {
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
     private final CommentRepository commentRepository;
+    private final ApplicationEventPublisher publisher;
 
+    @Transactional
     public IdModel addComment(
             String email,
             UUID eventId,
@@ -48,6 +53,8 @@ public class CommentService {
         event.getComments().add(newComment);
 
         commentRepository.save(newComment);
+
+        publisher.publishEvent(new NewCommentEvent(newComment.getId(), eventId));
 
         return new IdModel().setId(newComment.getId());
     }
