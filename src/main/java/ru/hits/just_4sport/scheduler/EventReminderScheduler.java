@@ -11,7 +11,9 @@ import ru.hits.just_4sport.service.notification.EmailService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
+import java.util.Locale;
 
 @Slf4j
 @Component
@@ -21,7 +23,7 @@ public class EventReminderScheduler {
     private final EventRepository eventRepository;
     private final EmailService emailService;
 
-    @Scheduled(cron = "0 45 17 * * *", zone = "Asia/Novosibirsk")
+    @Scheduled(cron = "0 30 17 * * *", zone = "Asia/Novosibirsk")
     @Transactional(readOnly = true)
     public void sendTomorrowEventReminders() {
         var tomorrow = LocalDate.now().plusDays(1);
@@ -52,7 +54,7 @@ public class EventReminderScheduler {
                             "Напоминание о мероприятии",
                             buildReminderText(
                                     event.getName(),
-                                    event.getDateStart(),
+                                    formatDateTime(event.getDateStart()),
                                     event.getPlace()
                             )
                     );
@@ -65,7 +67,7 @@ public class EventReminderScheduler {
 
     private String buildReminderText(
             String eventName,
-            LocalDateTime dateStart,
+            String dateStart,
             String place
     ) {
         return """
@@ -79,5 +81,14 @@ public class EventReminderScheduler {
                 С уважением,
                 команда JUST4SPORT
                 """.formatted(eventName, dateStart, place);
+    }
+
+    private String formatDateTime(LocalDateTime dateTime) {
+        var formatter = DateTimeFormatter.ofPattern(
+                "dd.MM.yyyy 'в' HH:mm",
+                Locale.forLanguageTag("ru-RU")
+        );
+
+        return dateTime.format(formatter);
     }
 }
