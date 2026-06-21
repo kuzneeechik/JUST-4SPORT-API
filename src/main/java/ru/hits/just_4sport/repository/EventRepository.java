@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.hits.just_4sport.model.domain.EventEntity;
-import ru.hits.just_4sport.model.domain.TeamEntity;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,12 +16,14 @@ public interface EventRepository extends JpaRepository<EventEntity, UUID>,
     Optional<EventEntity> findEventEntitiesById(UUID id);
 
     @Query("""
-        select e
+        select distinct e
         from EventEntity e
             join e.teams t
-        where t in :teams
+            left join t.teamMembers m
+        where t.captain.id = :userId
+            or m.id = :userId
     """)
-    List<EventEntity> findEventEntitiesByAnyTeamIn(@Param("teams") List<TeamEntity> teams);
+    List<EventEntity> findEventEntitiesByAnyTeamIn(@Param("userId") UUID userId);
 
     List<EventEntity> findAllByDateStartBetween(LocalDateTime dateStartAfter, LocalDateTime dateStartBefore);
 }

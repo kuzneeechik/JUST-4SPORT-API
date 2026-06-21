@@ -39,7 +39,7 @@ public class UserProfileService {
                 .setPhoto(photoMapper.toModel(user.getPhoto()))
                 .setFavoriteSports(user.getFavoriteSports());
 
-        var participantEvents = eventsRepository.findEventEntitiesByAnyTeamIn(user.getTeams())
+        var participantEvents = eventsRepository.findEventEntitiesByAnyTeamIn(user.getId())
                 .stream()
                 .map(eventMapper::toShortModel)
                 .toList();
