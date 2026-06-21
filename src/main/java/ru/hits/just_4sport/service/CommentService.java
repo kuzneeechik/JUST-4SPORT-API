@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.hits.just_4sport.infrastructure.exception.BadRequestException;
 import ru.hits.just_4sport.infrastructure.exception.ForbiddenAccessException;
 import ru.hits.just_4sport.infrastructure.exception.NotFoundException;
 import ru.hits.just_4sport.model.api.IdModel;
@@ -47,10 +48,12 @@ public class CommentService {
             var parentComment = commentRepository.findCommentEntityById(comment.getParentId())
                     .orElseThrow(() -> new NotFoundException("Родительский комментарий не найден"));
 
+            if (!parentComment.getEvent().getId().equals(event.getId())) {
+                throw new BadRequestException("Родительский комментарий относится к другому мероприятию");
+            }
+
             newComment.setParent(parentComment);
         }
-
-        event.getComments().add(newComment);
 
         commentRepository.save(newComment);
 
