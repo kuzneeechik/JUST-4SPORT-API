@@ -67,7 +67,7 @@ public class EventEntity {
     @JoinColumn(name = "schedule_id")
     private ScheduleEntity schedule;
 
-    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TeamEntity> teams = new ArrayList<>();
 
     @Column(nullable = false)
@@ -76,6 +76,6 @@ public class EventEntity {
     @Column(nullable = false)
     private Integer teamsNumber;
 
-    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommentEntity> comments = new ArrayList<>();
 }
