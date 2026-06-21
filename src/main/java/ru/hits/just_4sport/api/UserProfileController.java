@@ -31,19 +31,19 @@ public class UserProfileController {
         return ResponseEntity.ok(userProfileService.getUserProfile(id));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping
     public ResponseEntity<Void> updateUserProfile(
-            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails user,
             @Valid @RequestBody UserUpdateProfileModel userProfile
     ) {
-        userProfileService.updateUserProfile(id, userProfile);
+        userProfileService.updateUserProfile(user.getUsername(), userProfile);
 
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUserProfile(@PathVariable UUID id) {
-        userProfileService.deleteUserProfile(id);
+    @DeleteMapping
+    public ResponseEntity<Void> deleteUserProfile(@AuthenticationPrincipal UserDetails user) {
+        userProfileService.deleteUserProfile(user.getUsername());
 
         return ResponseEntity.ok().build();
     }

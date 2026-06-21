@@ -61,8 +61,8 @@ public class UserProfileService {
         return getUserProfile(user.getId());
     }
 
-    public void updateUserProfile(UUID id, UserUpdateProfileModel userProfile) {
-        var user = userRepository.findById(id)
+    public void updateUserProfile(String email, UserUpdateProfileModel userProfile) {
+        var user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
         user.setName(userProfile.getName())
@@ -74,10 +74,13 @@ public class UserProfileService {
     }
 
     @Transactional
-    public void deleteUserProfile(UUID id) {
-        refreshTokenRepository.deleteAllByUserId(id);
+    public void deleteUserProfile(String email) {
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
-        userRepository.deleteById(id);
+        refreshTokenRepository.deleteAllByUserId(user.getId());
+
+        userRepository.delete(user);
     }
 
     public void setUserProfilePhoto(String email, MultipartFile photo) {
