@@ -14,6 +14,7 @@ import ru.hits.just_4sport.repository.PhotoRepository;
 import ru.hits.just_4sport.repository.RefreshTokenRepository;
 import ru.hits.just_4sport.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
@@ -31,6 +32,17 @@ public class UserProfileService {
     public UserProfileModel getUserProfile(UUID id) {
         var user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        if (user.getIsDeleted()) {
+            return new UserProfileModel()
+                    .setName("Удалённый аккаунт")
+                    .setNickname("deleted-user")
+                    .setEmail("deleted-user")
+                    .setPhoto(null)
+                    .setFavoriteSports(new ArrayList<>())
+                    .setParticipantEvents(new ArrayList<>())
+                    .setAuthorEvents(new ArrayList<>());
+        }
 
         var profile = new UserProfileModel()
                 .setName(user.getName())
@@ -80,7 +92,7 @@ public class UserProfileService {
 
         refreshTokenRepository.deleteAllByUserId(user.getId());
 
-        userRepository.delete(user);
+        user.setIsDeleted(true);
     }
 
     public void setUserProfilePhoto(String email, MultipartFile photo) {

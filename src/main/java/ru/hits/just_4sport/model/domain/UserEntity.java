@@ -20,6 +20,9 @@ public class UserEntity {
     @Id
     private UUID id = UUID.randomUUID();
 
+    @Column(nullable = false, name = "is_deleted")
+    private Boolean isDeleted = false;
+
     @Column(nullable = false)
     private String name;
 
